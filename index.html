@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ระบบค้นหาภาพกิจกรรม</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600&display=swap" rel="stylesheet">
+  <style>body { font-family: 'Sarabun', sans-serif; }</style>
+</head>
+<body class="bg-[#8a154b] min-h-screen text-white p-4 md:p-6">
+
+  <div class="max-w-5xl mx-auto">
+    <!-- Header -->
+    <header class="text-center mb-6">
+      <h1 class="text-3xl font-bold">ระบบค้นหาภาพกิจกรรม</h1>
+      <p class="text-pink-200 text-sm mt-1">อัปโหลดรูปหน้าของคุณ เพื่อค้นหารูปกิจกรรมทั้งหมดที่มีคุณ</p>
+
+      <!-- กล่องอัปโหลดค้นหา -->
+      <div class="mt-4 max-w-md mx-auto bg-white/10 backdrop-blur border border-white/20 p-4 rounded-xl">
+        <label for="search-input" class="flex flex-col items-center justify-center border-2 border-dashed border-pink-300 rounded-lg p-3 cursor-pointer hover:bg-white/5 transition">
+          <svg class="w-8 h-8 text-pink-200 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+          <span class="text-sm">กดเลือกรูปหน้าตรง / เซลฟี่</span>
+        </label>
+        <input id="search-input" type="file" accept="image/*" class="hidden" onchange="searchFace(event)">
+        
+        <div id="search-status" class="hidden mt-3 text-xs flex justify-between items-center text-yellow-300">
+          <span id="status-msg">กำลังค้นหา...</span>
+          <button onclick="resetSearch()" class="bg-white/20 px-2 py-1 rounded text-white hover:bg-white/30">✕ ล้างค่า</button>
+        </div>
+      </div>
+
+      <!-- ปุ่มเปิดกล่องส่งรูปกิจกรรม -->
+      <div class="mt-4 text-right">
+        <button onclick="toggleModal(true)" class="text-xs bg-white text-[#8a154b] px-3 py-1.5 rounded-lg font-semibold hover:bg-pink-100 transition shadow">
+          + ส่งรูปภาพเข้ากิจกรรม
+        </button>
+      </div>
+    </header>
+
+    <!-- พื้นที่แสดงผลการค้นหา -->
+    <main>
+      <h2 id="view-title" class="text-lg font-semibold border-b border-white/20 pb-2 mb-4">รูปภาพที่ค้นพบ</h2>
+      <div id="photo-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+        <!-- รายการรูปภาพจะแสดงที่นี่ -->
+      </div>
+    </main>
+  </div>
+
+  <!-- Modal สำหรับให้คนอื่นอัปโหลดรูปกิจกรรม -->
+  <div id="upload-modal" class="hidden fixed inset-0 bg-black/70 flex items-center justify-center p-4 z-50">
+    <div class="bg-white rounded-xl max-w-sm w-full p-5 text-gray-800">
+      <h3 class="font-bold text-[#8a154b] mb-3">ส่งภาพเข้าร่วมกิจกรรม</h3>
+      
+      <label class="block text-xs mb-1">ชื่อกิจกรรม</label>
+      <input type="text" id="ev-title" value="กิจกรรมสัมพันธ์" class="w-full border p-1.5 text-xs rounded mb-2">
+
+      <label class="block text-xs mb-1">วันที่กิจกรรม</label>
+      <input type="date" id="ev-date" class="w-full border p-1.5 text-xs rounded mb-3">
+
+      <label class="block text-xs mb-1">เลือกรูปภาพ</label>
+      <input type="file" id="ev-files" accept="image/*" multiple class="w-full text-xs mb-3">
+
+      <div id="modal-msg" class="hidden text-xs text-blue-600 mb-2">กำลังอัปโหลด...</div>
+
+      <div class="flex justify-end gap-2 text-xs">
+        <button onclick="toggleModal(false)" class="px-3 py-1.5 bg-gray-200 rounded">ยกเลิก</button>
+        <button onclick="uploadPhotos()" class="px-3 py-1.5 bg-[#8a154b] text-white rounded">ส่งรูปภาพ</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ตั้งค่า URL เชื่อมต่อ
+    const HF_API = "วาง_DIRECT_LINK_HUGGING_FACE_ตรงนี้";
+    const GAS_URL = "วาง_URL_APPS_SCRIPT_ตรงนี้";
+    const FOLDER_ID = "วาง_GOOGLE_DRIVE_FOLDER_ID_ตรงนี้";
+
+    function toggleModal(show) {
+      document.getElementById('upload-modal').classList.toggle('hidden', !show);
+    }
+
+    // ฟังก์ชันค้นหาใบหน้า
+    async function searchFace(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const statusBox = document.getElementById('search-status');
+      const statusMsg = document.getElementById('status-msg');
+      const grid = document.getElementById('photo-grid');
+      
+      statusBox.classList.remove('hidden');
+      statusMsg.innerText = "กำลังตรวจจับใบหน้าและค้นหา...";
+
+      const formData = new FormData();
+      formData.append("file", file);
+
+      try {
+        const res = await fetch(`${HF_API}/search`, { method: "POST", body: formData });
+        const data = await res.json();
+
+        grid.innerHTML = "";
+        if (data.results && data.results.length > 0) {
+          statusMsg.innerText = `พบรูปภาพของคุณทั้งหมด ${data.results.length} รูป`;
+          data.results.forEach(item => {
+            grid.innerHTML += `
+              <div class="bg-white rounded-lg overflow-hidden shadow text-gray-800">
+                <a href="${item.photo_url}" target="_blank">
+                  <img src="${item.photo_url}" class="w-full h-36 object-cover hover:opacity-90">
+                </a>
+                <div class="p-2 text-xs">
+                  <p class="font-bold truncate text-[#8a154b]">${item.event_title}</p>
+                  <p class="text-gray-500">${item.event_date}</p>
+                </div>
+              </div>
+            `;
+          });
+        } else {
+          statusMsg.innerText = "ไม่พบรูปภาพที่ตรงกับใบหน้านี้";
+        }
+      } catch (err) {
+        statusMsg.innerText = "เกิดข้อผิดพลาดในการค้นหา";
+      }
+    }
+
+    function resetSearch() {
+      document.getElementById('search-input').value = "";
+      document.getElementById('search-status').classList.add('hidden');
+      document.getElementById('photo-grid').innerHTML = "";
+    }
+
+    // ฟังก์ชันให้คนอื่นส่งรูปเข้า Google Drive
+    async function uploadPhotos() {
+      const files = document.getElementById('ev-files').files;
+      const title = document.getElementById('ev-title').value;
+      const date = document.getElementById('ev-date').value;
+      const msg = document.getElementById('modal-msg');
+
+      if (files.length === 0) return alert("กรุณาเลือกรูปภาพ");
+      msg.classList.remove('hidden');
+
+      for (let file of files) {
+        const base64Data = await new Promise(resolve => {
+          const reader = new FileReader();
+          reader.onload = () => resolve(reader.result);
+          reader.readAsDataURL(file);
+        });
+
+        await fetch(GAS_URL, {
+          method: "POST",
+          body: JSON.stringify({
+            folderId: FOLDER_ID,
+            fileName: file.name,
+            mimeType: file.type,
+            base64Data: base64Data,
+            eventTitle: title,
+            eventDate: date
+          })
+        });
+      }
+
+      msg.classList.add('hidden');
+      alert("อัปโหลดสำเร็จเรียบร้อย");
+      toggleModal(false);
+    }
+  </script>
+</body>
+</html>

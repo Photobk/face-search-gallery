@@ -47,9 +47,9 @@
     </main>
   </div>
 
-  <!-- Modal สำหรับให้คนอื่นอัปโหลดรูปกิจกรรม -->
+  <!-- Modal สำหรับส่งรูปกิจกรรม -->
   <div id="upload-modal" class="hidden fixed inset-0 bg-black/70 flex items-center justify-center p-4 z-50">
-    <div class="bg-white rounded-xl max-w-sm w-full p-5 text-gray-800">
+    <div class="bg-white rounded-xl max-w-sm w-full p-5 text-gray-800 shadow-2xl">
       <h3 class="font-bold text-[#8a154b] mb-3">ส่งภาพเข้าร่วมกิจกรรม</h3>
       
       <label class="block text-xs mb-1">ชื่อกิจกรรม</label>
@@ -61,17 +61,16 @@
       <label class="block text-xs mb-1">เลือกรูปภาพ</label>
       <input type="file" id="ev-files" accept="image/*" multiple class="w-full text-xs mb-3">
 
-      <div id="modal-msg" class="hidden text-xs text-blue-600 mb-2">กำลังอัปโหลด...</div>
+      <div id="modal-msg" class="hidden text-xs text-blue-600 mb-2 font-medium">กำลังอัปโหลด...</div>
 
       <div class="flex justify-end gap-2 text-xs">
-        <button onclick="toggleModal(false)" class="px-3 py-1.5 bg-gray-200 rounded">ยกเลิก</button>
-        <button onclick="uploadPhotos()" class="px-3 py-1.5 bg-[#8a154b] text-white rounded">ส่งรูปภาพ</button>
+        <button type="button" onclick="toggleModal(false)" class="px-3 py-1.5 bg-gray-200 rounded hover:bg-gray-300">ยกเลิก</button>
+        <button type="button" id="btn-upload" onclick="uploadPhotos()" class="px-3 py-1.5 bg-[#8a154b] text-white rounded hover:bg-[#70103c]">ส่งรูปภาพ</button>
       </div>
     </div>
   </div>
 
   <script>
-    // ตั้งค่า URL เชื่อมต่อ
     const HF_API = "https://face-search-api-h8vt.onrender.com";
     const GAS_URL = "https://script.google.com/macros/s/AKfycbyZGNqj62e0krJ8Fs8G2gXywpFlIHLLG7E8F8dzRf7R-ixNF2BHRKMCEoccsHKaj8g/exec";
     const FOLDER_ID = "1LL0fqqxFG9-bAwaUMsaOL90of0ZOsvct";
@@ -97,29 +96,40 @@
 
       try {
         const res = await fetch(`${HF_API}/search`, { method: "POST", body: formData });
-        const data = await res.json();
+        
+        if (!res.ok) {
+          throw new Error(`HTTP error! status: ${res.status}`);
+        }
 
+        const data = await res.json();
         grid.innerHTML = "";
+
         if (data.results && data.results.length > 0) {
           statusMsg.innerText = `พบรูปภาพของคุณทั้งหมด ${data.results.length} รูป`;
           data.results.forEach(item => {
+            // รองรับทั้งชื่อ photo_url, image_url หรือ url จาก Qdrant Payload
+            const imgUrl = item.photo_url || item.image_url || item.url || "";
+            const title = item.event_title || item.title || "รูปกิจกรรม";
+            const date = item.event_date || item.date || "";
+
             grid.innerHTML += `
               <div class="bg-white rounded-lg overflow-hidden shadow text-gray-800">
-                <a href="${item.photo_url}" target="_blank">
-                  <img src="${item.photo_url}" class="w-full h-36 object-cover hover:opacity-90">
+                <a href="${imgUrl}" target="_blank">
+                  <img src="${imgUrl}" class="w-full h-36 object-cover hover:opacity-90" onerror="this.src='https://via.placeholder.com/300?text=Image+Load+Error'">
                 </a>
                 <div class="p-2 text-xs">
-                  <p class="font-bold truncate text-[#8a154b]">${item.event_title}</p>
-                  <p class="text-gray-500">${item.event_date}</p>
+                  <p class="font-bold truncate text-[#8a154b]">${title}</p>
+                  <p class="text-gray-500">${date}</p>
                 </div>
               </div>
             `;
           });
         } else {
-          statusMsg.innerText = "ไม่พบรูปภาพที่ตรงกับใบหน้านี้";
+          statusMsg.innerText = "ไม่พบรูปภาพที่ตรงกับใบหน้านี้ (คะแนนความคล้ายคลึงไม่ถึงเกณฑ์)";
         }
       } catch (err) {
-        statusMsg.innerText = "เกิดข้อผิดพลาดในการค้นหา";
+        console.error("Search Error:", err);
+        statusMsg.innerText = "เกิดข้อผิดพลาดในการเชื่อมต่อเซิร์ฟเวอร์ กรุณาลองใหม่อีกครั้ง";
       }
     }
 
@@ -129,39 +139,58 @@
       document.getElementById('photo-grid').innerHTML = "";
     }
 
-    // ฟังก์ชันให้คนอื่นส่งรูปเข้า Google Drive
+    // ฟังก์ชันส่งรูปเข้า Google Apps Script (แก้ไขไม่ให้ติด CORS)
     async function uploadPhotos() {
       const files = document.getElementById('ev-files').files;
       const title = document.getElementById('ev-title').value;
       const date = document.getElementById('ev-date').value;
       const msg = document.getElementById('modal-msg');
+      const btn = document.getElementById('btn-upload');
 
       if (files.length === 0) return alert("กรุณาเลือกรูปภาพ");
+
       msg.classList.remove('hidden');
+      btn.disabled = true;
 
-      for (let file of files) {
-        const base64Data = await new Promise(resolve => {
-          const reader = new FileReader();
-          reader.onload = () => resolve(reader.result);
-          reader.readAsDataURL(file);
-        });
+      try {
+        for (let i = 0; i < files.length; i++) {
+          const file = files[i];
+          msg.innerText = `กำลังส่งรูปที่ ${i + 1}/${files.length}...`;
 
-        await fetch(GAS_URL, {
-          method: "POST",
-          body: JSON.stringify({
+          const base64Data = await new Promise(resolve => {
+            const reader = new FileReader();
+            reader.onload = () => resolve(reader.result.split(',')[1]); // ตัด header base64 data: ออก
+            reader.readAsDataURL(file);
+          });
+
+          const payload = {
             folderId: FOLDER_ID,
             fileName: file.name,
             mimeType: file.type,
             base64Data: base64Data,
             eventTitle: title,
             eventDate: date
-          })
-        });
-      }
+          };
 
-      msg.classList.add('hidden');
-      alert("อัปโหลดสำเร็จเรียบร้อย");
-      toggleModal(false);
+          // ใช้ mode: 'no-cors' เพื่อให้ส่งข้อมูลเข้า GAS ได้อย่างราบรื่นโดยไม่โดนเบราว์เซอร์บล็อก
+          await fetch(GAS_URL, {
+            method: "POST",
+            mode: "no-cors",
+            headers: { "Content-Type": "text/plain" },
+            body: JSON.stringify(payload)
+          });
+        }
+
+        alert("ส่งรูปภาพเข้าสู่ระบบเรียบร้อยแล้ว รอระบบประมวลผลประมาณ 10-20 วินาที");
+        toggleModal(false);
+        document.getElementById('ev-files').value = "";
+      } catch (err) {
+        console.error("Upload Error:", err);
+        alert("เกิดข้อผิดพลาดในการอัปโหลดรูปภาพ: " + err.message);
+      } finally {
+        msg.classList.add('hidden');
+        btn.disabled = false;
+      }
     }
   </script>
 </body>

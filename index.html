@@ -18,7 +18,6 @@
   <style>
     body { font-family: 'Prompt', sans-serif; transition: background-color 0.3s, color 0.3s; }
     
-    /* สไตล์ Dark Mode */
     .dark .glass-card {
       background: rgba(15, 23, 42, 0.75);
       border: 1px solid rgba(255, 255, 255, 0.08);
@@ -27,7 +26,6 @@
       background: radial-gradient(circle, rgba(59, 130, 246, 0.15) 0%, rgba(99, 102, 241, 0.08) 40%, transparent 70%);
     }
 
-    /* สไตล์ Light Mode */
     .glass-card {
       background: rgba(255, 255, 255, 0.85);
       border: 1px solid rgba(226, 232, 240, 0.8);
@@ -63,6 +61,15 @@
       column-gap: 1.25rem !important;
       row-gap: 1.5rem !important;
     }
+    /* ปรับแต่งปฏิทินให้คลิกได้ทั้งช่อง */
+    input[type="date"]::-webkit-calendar-picker-indicator {
+      cursor: pointer;
+      opacity: 0.6;
+      filter: invert(0.5);
+    }
+    .dark input[type="date"]::-webkit-calendar-picker-indicator {
+      filter: invert(0.9);
+    }
   </style>
 </head>
 <body class="bg-slate-50 text-slate-800 dark:bg-gradient-to-br dark:from-[#0b0f19] dark:via-[#0f172a] dark:to-[#020617] dark:text-slate-100 min-h-screen flex flex-col antialiased selection:bg-indigo-500 selection:text-white">
@@ -92,7 +99,7 @@
           <i id="theme-icon" class="fa-solid fa-sun text-sm"></i>
         </button>
 
-        <!-- ปุ่มส่งรูปเข้ากิจกรรม -->
+        <!-- ปุ่มเปิดหน้าต่างอัปโหลดอัลบั้ม -->
         <button onclick="toggleUploadModal(true)" class="group flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white dark:bg-indigo-600/20 dark:hover:bg-indigo-600/30 dark:text-indigo-200 dark:hover:text-white border border-transparent dark:border-indigo-500/30 px-3.5 py-2 rounded-xl text-xs font-medium transition duration-200 active:scale-95 shadow-sm">
           <i class="fa-solid fa-cloud-arrow-up text-indigo-200 dark:text-indigo-400 group-hover:scale-110 transition-transform"></i>
           <span class="hidden sm:inline">ส่งรูปภาพ</span>
@@ -103,11 +110,35 @@
   </header>
 
   <!-- Main Container -->
-  <main class="max-w-6xl w-full mx-auto p-4 md:p-8 flex-1 flex flex-col space-y-12">
+  <main class="max-w-6xl w-full mx-auto p-4 md:p-8 flex-1 flex flex-col space-y-10">
     
-    <!-- Face Upload Area -->
-    <section class="max-w-md w-full mx-auto text-center">
-      <div class="glass-card rounded-2xl p-5 shadow-xl relative overflow-hidden transition-all duration-300 backdrop-blur-md">
+    <!-- Top Search & Face Area -->
+    <section class="max-w-md w-full mx-auto flex flex-col items-center space-y-4">
+      
+      <!-- 1. ช่องค้นหากิจกรรม (ย้ายขึ้นมาไว้ด้านบน ชัดเจนตามภาพ) -->
+      <div class="w-full relative">
+        <span class="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none text-slate-400 dark:text-slate-500">
+          <i class="fa-solid fa-magnifying-glass text-xs"></i>
+        </span>
+        <input 
+          type="text" 
+          id="album-search-input" 
+          oninput="filterAlbums()" 
+          placeholder="ค้นหาชื่อกิจกรรม หรือ วันที่ (คำใกล้เคียงได้)..." 
+          class="w-full pl-9 pr-9 py-2.5 text-xs rounded-2xl bg-white dark:bg-slate-900/90 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 transition shadow-md backdrop-blur-md"
+        >
+        <button 
+          type="button" 
+          id="clear-album-search" 
+          onclick="clearAlbumSearch()" 
+          class="hidden absolute inset-y-0 right-0 flex items-center pr-3 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition text-xs"
+        >
+          <i class="fa-solid fa-circle-xmark"></i>
+        </button>
+      </div>
+
+      <!-- 2. กล่องสแกนใบหน้า -->
+      <div class="w-full glass-card rounded-2xl p-5 shadow-xl relative overflow-hidden transition-all duration-300 backdrop-blur-md text-center">
         
         <label for="search-input" class="cursor-pointer flex flex-col items-center justify-center border-2 border-dashed border-slate-300 dark:border-slate-700 hover:border-indigo-500 rounded-xl p-5 transition-all duration-300 hover:bg-slate-50 dark:hover:bg-slate-800/40 group relative">
           
@@ -158,11 +189,9 @@
       </div>
     </section>
 
-    <!-- Albums Section (อัลบั้มกิจกรรมทั้งหมด พร้อมช่องค้นหากิจกรรมแบบ Fuzzy Search) -->
+    <!-- Albums Section (อัลบั้มกิจกรรมทั้งหมด) -->
     <section class="pt-4 border-t border-slate-200 dark:border-slate-800/80">
-      
-      <!-- ส่วนหัวของอัลบั้ม พร้อมช่องค้นหากิจกรรม -->
-      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 mb-5 border-b border-slate-200/60 dark:border-slate-800/60">
+      <div class="flex items-center justify-between pb-3 mb-5">
         <div class="flex items-center gap-2.5">
           <div class="w-8 h-8 rounded-lg bg-blue-50 dark:bg-blue-500/10 border border-blue-200 dark:border-blue-400/20 flex items-center justify-center text-blue-600 dark:text-blue-400">
             <i class="fa-solid fa-folder-open text-sm"></i>
@@ -171,28 +200,6 @@
             <h2 class="text-sm md:text-base font-semibold text-slate-800 dark:text-white">อัลบั้มกิจกรรมทั้งหมด</h2>
             <p id="album-count" class="text-[11px] text-slate-500 dark:text-slate-400">กำลังโหลดอัลบั้ม...</p>
           </div>
-        </div>
-
-        <!-- กล่อง Input ค้นหากิจกรรม -->
-        <div class="relative w-full sm:w-72">
-          <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-slate-400 dark:text-slate-500">
-            <i class="fa-solid fa-magnifying-glass text-xs"></i>
-          </span>
-          <input 
-            type="text" 
-            id="album-search-input" 
-            oninput="filterAlbums()" 
-            placeholder="ค้นหาชื่อกิจกรรม หรือ วันที่ (คำใกล้เคียงได้)..." 
-            class="w-full pl-8 pr-8 py-2 text-xs rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition shadow-sm"
-          >
-          <button 
-            type="button" 
-            id="clear-album-search" 
-            onclick="clearAlbumSearch()" 
-            class="hidden absolute inset-y-0 right-0 flex items-center pr-2.5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition text-xs"
-          >
-            <i class="fa-solid fa-circle-xmark"></i>
-          </button>
         </div>
       </div>
 
@@ -227,7 +234,7 @@
     </div>
   </div>
 
-  <!-- Modal อัปโหลดรูป -->
+  <!-- Modal อัปโหลดรูปภาพเป็นอัลบั้ม (ปรับแต่งตามคำขอ) -->
   <div id="upload-modal" class="hidden fixed inset-0 bg-black/60 dark:bg-black/80 backdrop-blur-md flex items-center justify-center p-4 z-50">
     <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl max-w-md w-full p-6 shadow-2xl text-slate-800 dark:text-slate-100 relative">
       <div class="flex justify-between items-center mb-5 pb-3 border-b border-slate-200 dark:border-slate-800">
@@ -235,7 +242,7 @@
           <div class="w-8 h-8 rounded-lg bg-indigo-50 dark:bg-indigo-500/10 border border-indigo-200 dark:border-indigo-400/20 flex items-center justify-center text-indigo-600 dark:text-indigo-400">
             <i class="fa-solid fa-cloud-arrow-up text-sm"></i>
           </div>
-          <h3 class="font-bold text-sm md:text-base text-slate-800 dark:text-white">ส่งภาพเข้าร่วมกิจกรรม</h3>
+          <h3 class="font-bold text-sm md:text-base text-slate-800 dark:text-white">อัปโหลดรูปภาพเป็นอัลบั้ม</h3>
         </div>
         <button type="button" onclick="toggleUploadModal(false)" class="text-slate-400 hover:text-slate-600 dark:hover:text-white text-base">
           <i class="fa-solid fa-xmark"></i>
@@ -247,18 +254,29 @@
           <label class="block text-slate-600 dark:text-slate-300 mb-1.5 font-medium">ชื่อกิจกรรม</label>
           <input type="text" id="ev-title" value="กิจกรรม/ประชุม" required class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl p-2.5 text-slate-800 dark:text-white placeholder-slate-400 focus:outline-none focus:border-indigo-500 transition">
         </div>
+
         <div>
-          <label class="block text-slate-600 dark:text-slate-300 mb-1.5 font-medium">วันที่จัดกิจกรรม</label>
-          <input type="date" id="ev-date" required class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl p-2.5 text-slate-800 dark:text-white focus:outline-none focus:border-indigo-500 transition">
+          <label class="block text-slate-600 dark:text-slate-300 mb-1.5 font-medium">วันที่จัดกิจกรรม (กดเลือกจากปฏิทิน)</label>
+          <div class="relative cursor-pointer" onclick="document.getElementById('ev-date').showPicker ? document.getElementById('ev-date').showPicker() : document.getElementById('ev-date').focus()">
+            <input 
+              type="date" 
+              id="ev-date" 
+              required 
+              class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl p-2.5 text-slate-800 dark:text-white focus:outline-none focus:border-indigo-500 transition cursor-pointer"
+            >
+          </div>
         </div>
+
         <div>
           <label class="block text-slate-600 dark:text-slate-300 mb-1.5 font-medium">เลือกรูปภาพกิจกรรม</label>
           <input type="file" id="ev-files" accept="image/*" multiple required class="w-full file:mr-3 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-indigo-50 dark:file:bg-indigo-600/20 file:text-indigo-600 dark:file:text-indigo-300 hover:file:bg-indigo-100 dark:hover:file:bg-indigo-600/30 text-slate-500 border border-slate-200 dark:border-slate-800 rounded-xl p-1.5 bg-slate-50 dark:bg-slate-950 focus:outline-none">
         </div>
+
         <div id="modal-msg" class="hidden p-3 rounded-xl bg-indigo-50 dark:bg-indigo-500/10 border border-indigo-200 dark:border-indigo-500/20 text-indigo-600 dark:text-indigo-300 flex items-center gap-2">
           <i class="fa-solid fa-circle-notch fa-spin text-indigo-500"></i>
           <span id="modal-msg-text">กำลังอัปโหลด...</span>
         </div>
+
         <div class="flex justify-end gap-2.5 pt-3">
           <button type="button" onclick="toggleUploadModal(false)" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 rounded-xl transition">ยกเลิก</button>
           <button type="submit" id="btn-upload" class="px-5 py-2 bg-indigo-600 hover:bg-indigo-500 text-white font-medium rounded-xl shadow-lg shadow-indigo-600/20 transition active:scale-95">ส่งรูปภาพ</button>
@@ -313,7 +331,6 @@
       document.getElementById('album-view-modal').classList.toggle('hidden', !show);
     }
 
-    // ฟังก์ชันดึงอัลบั้มกิจกรรมมาแสดง
     async function loadAlbums() {
       const albumCount = document.getElementById('album-count');
       
@@ -330,7 +347,6 @@
       }
     }
 
-    // ฟังก์ชันวาดการ์ดอัลบั้ม
     function renderAlbums(albumsToRender) {
       const albumsGrid = document.getElementById('albums-grid');
       const albumCount = document.getElementById('album-count');
@@ -371,8 +387,7 @@
       });
     }
 
-    // ================= อัลกอริทึมค้นหาคำใกล้เคียง (Fuzzy & Flexible Search) =================
-    // 1. ตรวจสอบการเป็นลำดับตัวอักษร (Subsequence match)
+    // ================= ค้นหาคำใกล้เคียง (Fuzzy Search) =================
     function isSubsequence(pattern, str) {
       let pIdx = 0, sIdx = 0;
       while (pIdx < pattern.length && sIdx < str.length) {
@@ -382,7 +397,6 @@
       return pIdx === pattern.length;
     }
 
-    // 2. คำนวณความคล้ายคลึงของข้อความ (Levenshtein Distance Similarity)
     function getSimilarity(s1, s2) {
       if (!s1 || !s2) return 0;
       const longer = s1.length > s2.length ? s1 : s2;
@@ -393,9 +407,8 @@
       for (let i = 0; i <= longer.length; i++) {
         let lastValue = i;
         for (let j = 0; j <= shorter.length; j++) {
-          if (i === 0) {
-            costs[j] = j;
-          } else if (j > 0) {
+          if (i === 0) costs[j] = j;
+          else if (j > 0) {
             let newValue = costs[j - 1];
             if (longer.charAt(i - 1) !== shorter.charAt(j - 1)) {
               newValue = Math.min(Math.min(newValue, lastValue), costs[j]) + 1;
@@ -409,7 +422,6 @@
       return (longer.length - costs[shorter.length]) / longer.length;
     }
 
-    // 3. ฟังก์ชันหลักสำหรับตรวจสอบคำใกล้เคียง
     function matchesFuzzy(text, query) {
       if (!query) return true;
       if (!text) return false;
@@ -417,22 +429,17 @@
       text = text.toLowerCase().trim();
       query = query.toLowerCase().trim();
 
-      // มีคำนั้นอยู่ตรงๆ หรือไม่
       if (text.includes(query)) return true;
 
-      // แยกคำค้นหาออกเป็นชิ้นๆ (Multi-term matching) เช่น "ประชุม บึงกาฬ"
       const terms = query.split(/\s+/).filter(t => t.length > 0);
       const allTermsFound = terms.every(term => text.includes(term) || isSubsequence(term, text));
       if (allTermsFound) return true;
 
-      // ตรวจสอบลำดับอักษรย่อ / พิมพ์ตกบางตัว
       if (query.length >= 3 && isSubsequence(query, text)) return true;
 
-      // ตัดคำในข้อความมาเปรียบเทียบคะแนนความคล้ายคลึง (รับมือการพิมพ์สระหรือพยัญชนะผิด 1-2 ตัว)
       const words = text.split(/[\s,./\-_()]+/).filter(w => w.length > 0);
       for (const word of words) {
         if (getSimilarity(word, query) >= 0.55) return true;
-        // กรณีค้นหาด้วยคำสั้น
         if (query.length >= 3 && word.length >= 3) {
           if (word.startsWith(query.substring(0, 3))) return true;
         }
@@ -441,7 +448,6 @@
       return false;
     }
 
-    // ฟังก์ชันค้นหากรองอัลบั้ม
     function filterAlbums() {
       const query = document.getElementById('album-search-input').value.trim();
       const clearBtn = document.getElementById('clear-album-search');
@@ -457,7 +463,6 @@
         return;
       }
 
-      // กรองผ่าน matchesFuzzy ทั้งชื่อกิจกรรมและวันที่
       const filtered = loadedAlbums.filter(album => {
         const titleMatch = matchesFuzzy(album.title || '', query);
         const dateMatch = matchesFuzzy(album.date || '', query);

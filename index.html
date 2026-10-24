@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ระบบค้นหาภาพกิจกรรมด้วยใบหน้า</title>
+  <title>ระบบค้นหาภาพกิจกรรมด้วยใบหน้า | AI Face Search</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -15,13 +15,13 @@
       font-family: 'Prompt', sans-serif; 
     }
     .glass-card {
-      background: rgba(255, 255, 255, 0.08);
+      background: rgba(15, 23, 42, 0.7);
       backdrop-filter: blur(16px);
       -webkit-backdrop-filter: blur(16px);
-      border: 1px solid rgba(255, 255, 255, 0.15);
+      border: 1px solid rgba(255, 255, 255, 0.08);
     }
     .glass-modal {
-      background: rgba(25, 10, 20, 0.75);
+      background: rgba(2, 6, 23, 0.85);
       backdrop-filter: blur(20px);
       -webkit-backdrop-filter: blur(20px);
     }
@@ -30,16 +30,16 @@
       top: 0;
       left: 50%;
       transform: translateX(-50%);
-      width: 650px;
-      height: 350px;
-      background: radial-gradient(circle, rgba(236, 72, 153, 0.35) 0%, rgba(138, 21, 75, 0) 70%);
-      filter: blur(60px);
+      width: 700px;
+      height: 380px;
+      background: radial-gradient(circle, rgba(59, 130, 246, 0.18) 0%, rgba(99, 102, 241, 0.1) 40%, transparent 70%);
+      filter: blur(70px);
       z-index: -1;
       pointer-events: none;
     }
     .scan-line {
       height: 2px;
-      background: linear-gradient(90deg, transparent, #ec4899, #f43f5e, transparent);
+      background: linear-gradient(90deg, transparent, #38bdf8, #818cf8, transparent);
       animation: scan 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
     }
     @keyframes scan {
@@ -49,29 +49,29 @@
     }
   </style>
 </head>
-<body class="bg-gradient-to-br from-[#4a0826] via-[#750e3d] to-[#2d0517] min-h-screen text-slate-100 flex flex-col antialiased selection:bg-pink-500 selection:text-white">
+<body class="bg-gradient-to-br from-[#0b0f19] via-[#0f172a] to-[#020617] min-h-screen text-slate-100 flex flex-col antialiased selection:bg-indigo-500 selection:text-white">
 
-  <!-- Background Ambient Glow -->
+  <!-- Ambient Glow -->
   <div class="glow-bg"></div>
 
   <!-- Navbar -->
-  <header class="w-full border-b border-white/10 px-6 py-4 glass-card sticky top-0 z-40">
+  <header class="w-full border-b border-slate-800 px-6 py-4 glass-card sticky top-0 z-40">
     <div class="max-w-6xl mx-auto flex justify-between items-center">
       <div class="flex items-center gap-3">
-        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-pink-500 to-rose-400 flex items-center justify-center shadow-lg shadow-pink-500/30">
-          <i class="fa-solid fa-camera-retro text-lg text-white"></i>
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 to-blue-500 flex items-center justify-center shadow-lg shadow-indigo-500/20 border border-white/10">
+          <i class="fa-solid fa-camera text-base text-white"></i>
         </div>
         <div>
-          <h1 class="text-lg font-bold tracking-tight text-white flex items-center gap-2">
+          <h1 class="text-base md:text-lg font-bold tracking-tight text-white flex items-center gap-2">
             ระบบค้นหาภาพกิจกรรม
-            <span class="text-[10px] bg-pink-500/20 text-pink-300 border border-pink-400/30 px-2 py-0.5 rounded-full font-normal">AI Powered</span>
+            <span class="text-[10px] bg-indigo-500/10 text-indigo-300 border border-indigo-400/20 px-2 py-0.5 rounded-full font-normal">AI Powered</span>
           </h1>
-          <p class="text-xs text-pink-200/70">สแกนใบหน้าเพื่อค้นหารูปถ่ายของคุณทั้งหมดในทันที</p>
+          <p class="text-xs text-slate-400">ค้นหารูปถ่ายของคุณทั้งหมดในกิจกรรมด้วยระบบสแกนใบหน้า</p>
         </div>
       </div>
 
-      <button onclick="toggleModal(true)" class="group flex items-center gap-2 bg-white/10 hover:bg-white/20 text-white border border-white/20 hover:border-pink-300/50 px-4 py-2 rounded-xl text-xs font-medium transition duration-300 shadow-sm active:scale-95">
-        <i class="fa-solid fa-cloud-arrow-up text-pink-300 group-hover:scale-110 transition-transform"></i>
+      <button onclick="toggleModal(true)" class="group flex items-center gap-2 bg-indigo-600/20 hover:bg-indigo-600/30 text-indigo-200 hover:text-white border border-indigo-500/30 px-3.5 py-2 rounded-xl text-xs font-medium transition duration-200 active:scale-95 shadow-sm">
+        <i class="fa-solid fa-cloud-arrow-up text-indigo-400 group-hover:scale-110 transition-transform"></i>
         <span>ส่งรูปภาพเข้ากิจกรรม</span>
       </button>
     </div>
@@ -80,34 +80,34 @@
   <!-- Main Container -->
   <main class="max-w-6xl w-full mx-auto p-4 md:p-8 flex-1 flex flex-col">
     
-    <!-- Hero / Face Upload Area -->
+    <!-- Face Upload Area -->
     <section class="max-w-xl w-full mx-auto mb-10 text-center">
-      <div class="glass-card rounded-3xl p-6 md:p-8 shadow-2xl relative overflow-hidden transition-all duration-300 hover:border-pink-300/40">
+      <div class="glass-card rounded-2xl p-6 md:p-8 shadow-2xl relative overflow-hidden transition-all duration-300 border border-slate-800 hover:border-slate-700">
         
-        <label for="search-input" class="cursor-pointer flex flex-col items-center justify-center border-2 border-dashed border-pink-300/40 hover:border-pink-400 rounded-2xl p-6 transition-all duration-300 hover:bg-white/[0.03] group relative">
+        <label for="search-input" class="cursor-pointer flex flex-col items-center justify-center border-2 border-dashed border-slate-700 hover:border-indigo-400/60 rounded-xl p-6 transition-all duration-300 hover:bg-slate-800/40 group relative">
           
           <!-- Image Preview / Icon Container -->
-          <div id="preview-container" class="relative w-24 h-24 rounded-2xl overflow-hidden bg-white/5 border border-white/20 flex items-center justify-center mb-3 shadow-inner group-hover:scale-105 transition-transform">
-            <i id="default-icon" class="fa-solid fa-user-viewfinder text-4xl text-pink-300 group-hover:text-pink-200 transition-colors"></i>
+          <div id="preview-container" class="relative w-24 h-24 rounded-2xl overflow-hidden bg-slate-900/80 border border-slate-700 flex items-center justify-center mb-3 shadow-inner group-hover:scale-105 transition-transform">
+            <i id="default-icon" class="fa-solid fa-user-viewfinder text-3xl text-slate-500 group-hover:text-indigo-400 transition-colors"></i>
             <img id="selfie-preview" class="w-full h-full object-cover hidden" alt="Selfie preview" />
             <div id="scan-bar" class="hidden absolute top-0 left-0 w-full scan-line"></div>
           </div>
 
           <div class="space-y-1">
-            <span class="text-sm font-semibold text-white tracking-wide block">กดเลือกรูปหน้าตรง หรือ ถ่ายเซลฟี่</span>
-            <span class="text-xs text-pink-200/60 block">รองรับไฟล์ JPG, PNG (แนะนำหน้าตรงและเห็นใบหน้าชัดเจน)</span>
+            <span class="text-sm font-semibold text-slate-200 group-hover:text-indigo-300 transition-colors block">กดเลือกรูปหน้าตรง หรือ ถ่ายเซลฟี่</span>
+            <span class="text-xs text-slate-400 block">รองรับไฟล์ JPG, PNG (แนะนำใบหน้าตรง ชัดเจน ไม่สวมแว่นตาดำ)</span>
           </div>
 
           <input id="search-input" type="file" accept="image/*" class="hidden" onchange="searchFace(event)">
         </label>
 
         <!-- Search Status Box -->
-        <div id="search-status" class="hidden mt-4 pt-4 border-t border-white/10 flex items-center justify-between">
-          <div class="flex items-center gap-2.5 text-xs text-amber-200">
-            <i id="status-spinner" class="fa-solid fa-circle-notch fa-spin text-pink-400"></i>
-            <span id="status-msg" class="font-normal">กำลังตรวจจับใบหน้าและค้นหา...</span>
+        <div id="search-status" class="hidden mt-4 pt-4 border-t border-slate-800 flex items-center justify-between">
+          <div class="flex items-center gap-2.5 text-xs text-indigo-300">
+            <i id="status-spinner" class="fa-solid fa-circle-notch fa-spin text-indigo-400"></i>
+            <span id="status-msg" class="font-normal text-slate-300">กำลังตรวจจับใบหน้าและค้นหา...</span>
           </div>
-          <button onclick="resetSearch()" class="text-xs text-pink-200 hover:text-white bg-white/10 hover:bg-white/20 px-3 py-1.5 rounded-lg border border-white/10 transition flex items-center gap-1.5 active:scale-95">
+          <button onclick="resetSearch()" class="text-xs text-slate-400 hover:text-white bg-slate-800 hover:bg-slate-700 px-3 py-1.5 rounded-lg border border-slate-700 transition flex items-center gap-1.5 active:scale-95">
             <i class="fa-solid fa-rotate-left"></i> ล้างค่า
           </button>
         </div>
@@ -117,25 +117,25 @@
 
     <!-- Results Section -->
     <section class="flex-1 flex flex-col">
-      <div class="flex items-center justify-between border-b border-white/10 pb-4 mb-6">
-        <div class="flex items-center gap-2">
-          <i class="fa-solid fa-images text-pink-300"></i>
+      <div class="flex items-center justify-between border-b border-slate-800 pb-4 mb-6">
+        <div class="flex items-center gap-2.5">
+          <i class="fa-solid fa-images text-indigo-400"></i>
           <h2 class="text-base font-semibold text-white">รูปภาพที่ค้นพบ</h2>
         </div>
-        <span id="result-badge" class="text-xs bg-white/10 border border-white/10 text-pink-200 px-3 py-1 rounded-full">ยังไม่มีการค้นหา</span>
+        <span id="result-badge" class="text-xs bg-slate-800/80 border border-slate-700 text-slate-400 px-3 py-1 rounded-full">ยังไม่มีการค้นหา</span>
       </div>
 
       <!-- Empty State -->
-      <div id="empty-state" class="flex-1 flex flex-col items-center justify-center text-center py-16 text-pink-200/50">
-        <div class="w-16 h-16 rounded-full bg-white/5 border border-white/10 flex items-center justify-center mb-3">
-          <i class="fa-regular fa-image text-2xl"></i>
+      <div id="empty-state" class="flex-1 flex flex-col items-center justify-center text-center py-16 text-slate-500">
+        <div class="w-16 h-16 rounded-2xl bg-slate-900 border border-slate-800 flex items-center justify-center mb-3">
+          <i class="fa-regular fa-image text-2xl text-slate-600"></i>
         </div>
-        <p class="text-sm">กรุณาอัปโหลดรูปใบหน้าของคุณเพื่อเริ่มต้นค้นหาภาพกิจกรรม</p>
+        <p class="text-sm">อัปโหลดรูปหน้าของคุณที่กล่องด้านบน เพื่อให้ระบบค้นหาภาพกิจกรรมที่มีคุณ</p>
       </div>
 
-      <!-- Container แสดงผลกิจกรรมที่จัดกลุ่มแล้ว -->
+      <!-- Events Container (Group by Event) -->
       <div id="events-container" class="space-y-8">
-        <!-- บล็อกของแต่ละกิจกรรมจะแสดงที่นี่ -->
+        <!-- บล็อกกิจกรรมแต่ละรายการจะแสดงที่นี่ -->
       </div>
     </section>
 
@@ -143,45 +143,45 @@
 
   <!-- Upload Modal -->
   <div id="upload-modal" class="hidden fixed inset-0 glass-modal flex items-center justify-center p-4 z-50">
-    <div class="bg-gradient-to-b from-[#38071c] to-[#200411] border border-white/20 rounded-3xl max-w-md w-full p-6 shadow-2xl text-slate-100 relative">
+    <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-md w-full p-6 shadow-2xl text-slate-100 relative">
       
-      <div class="flex justify-between items-center mb-5 pb-3 border-b border-white/10">
+      <div class="flex justify-between items-center mb-5 pb-3 border-b border-slate-800">
         <div class="flex items-center gap-2.5">
-          <div class="w-8 h-8 rounded-lg bg-pink-500/20 border border-pink-400/30 flex items-center justify-center text-pink-300">
+          <div class="w-8 h-8 rounded-lg bg-indigo-500/10 border border-indigo-400/20 flex items-center justify-center text-indigo-400">
             <i class="fa-solid fa-cloud-arrow-up text-sm"></i>
           </div>
-          <h3 class="font-bold text-base text-white">ส่งภาพเข้าร่วมกิจกรรม</h3>
+          <h3 class="font-bold text-sm md:text-base text-white">ส่งภาพเข้าร่วมกิจกรรม</h3>
         </div>
-        <button type="button" onclick="toggleModal(false)" class="text-pink-300 hover:text-white text-lg">
+        <button type="button" onclick="toggleModal(false)" class="text-slate-400 hover:text-white text-base">
           <i class="fa-solid fa-xmark"></i>
         </button>
       </div>
 
       <form onsubmit="event.preventDefault(); uploadPhotos();" class="space-y-4 text-xs">
         <div>
-          <label class="block text-pink-200/80 mb-1.5 font-medium">ชื่อกิจกรรม</label>
-          <input type="text" id="ev-title" value="กิจกรรมสัมพันธ์" required class="w-full bg-white/5 border border-white/15 rounded-xl p-2.5 text-white placeholder-pink-200/40 focus:outline-none focus:border-pink-400 focus:ring-1 focus:ring-pink-400 transition">
+          <label class="block text-slate-300 mb-1.5 font-medium">ชื่อกิจกรรม</label>
+          <input type="text" id="ev-title" value="กิจกรรมสัมพันธ์" required class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition">
         </div>
 
         <div>
-          <label class="block text-pink-200/80 mb-1.5 font-medium">วันที่จัดกิจกรรม</label>
-          <input type="date" id="ev-date" required class="w-full bg-white/5 border border-white/15 rounded-xl p-2.5 text-white focus:outline-none focus:border-pink-400 focus:ring-1 focus:ring-pink-400 transition">
+          <label class="block text-slate-300 mb-1.5 font-medium">วันที่จัดกิจกรรม</label>
+          <input type="date" id="ev-date" required class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-white focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition">
         </div>
 
         <div>
-          <label class="block text-pink-200/80 mb-1.5 font-medium">เลือกรูปภาพกิจกรรม (เลือกได้หลายรูป)</label>
-          <input type="file" id="ev-files" accept="image/*" multiple required class="w-full file:mr-3 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-pink-500/20 file:text-pink-200 hover:file:bg-pink-500/30 text-pink-200/70 border border-white/15 rounded-xl p-1.5 bg-white/5 focus:outline-none">
+          <label class="block text-slate-300 mb-1.5 font-medium">เลือกรูปภาพกิจกรรม (เลือกได้หลายรูป)</label>
+          <input type="file" id="ev-files" accept="image/*" multiple required class="w-full file:mr-3 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-indigo-600/20 file:text-indigo-300 hover:file:bg-indigo-600/30 text-slate-400 border border-slate-800 rounded-xl p-1.5 bg-slate-950 focus:outline-none">
         </div>
 
         <!-- Upload Status Message -->
-        <div id="modal-msg" class="hidden p-3 rounded-xl bg-pink-500/10 border border-pink-400/20 text-pink-200 flex items-center gap-2">
-          <i class="fa-solid fa-circle-notch fa-spin text-pink-400"></i>
+        <div id="modal-msg" class="hidden p-3 rounded-xl bg-indigo-500/10 border border-indigo-500/20 text-indigo-300 flex items-center gap-2">
+          <i class="fa-solid fa-circle-notch fa-spin text-indigo-400"></i>
           <span id="modal-msg-text">กำลังอัปโหลด...</span>
         </div>
 
         <div class="flex justify-end gap-2.5 pt-3">
-          <button type="button" onclick="toggleModal(false)" class="px-4 py-2 bg-white/10 hover:bg-white/15 text-pink-200 rounded-xl transition">ยกเลิก</button>
-          <button type="submit" id="btn-upload" class="px-5 py-2 bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white font-medium rounded-xl shadow-lg shadow-pink-500/25 transition active:scale-95">ส่งรูปภาพ</button>
+          <button type="button" onclick="toggleModal(false)" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl transition">ยกเลิก</button>
+          <button type="submit" id="btn-upload" class="px-5 py-2 bg-indigo-600 hover:bg-indigo-500 text-white font-medium rounded-xl shadow-lg shadow-indigo-600/20 transition active:scale-95">ส่งรูปภาพ</button>
         </div>
       </form>
 
@@ -225,7 +225,7 @@
       const badge = document.getElementById('result-badge');
       
       statusBox.classList.remove('hidden');
-      statusMsg.innerText = "กำลังสแกนใบหน้าและค้นหาจากระบบ AI...";
+      statusMsg.innerText = "กำลังตรวจจับใบหน้าและค้นหาจากระบบ AI...";
       spinner.classList.remove('hidden');
 
       const formData = new FormData();
@@ -246,9 +246,9 @@
           emptyState.classList.add('hidden');
           statusMsg.innerText = "ประมวลผลสำเร็จ";
           badge.innerText = `พบภาพที่ตรงกัน ${data.results.length} รูป`;
-          badge.className = "text-xs bg-emerald-500/20 border border-emerald-400/30 text-emerald-300 px-3 py-1 rounded-full font-medium";
+          badge.className = "text-xs bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 px-3 py-1 rounded-full font-medium";
 
-          // จัดกลุ่มผลลัพธ์แยกตามชื่อกิจกรรม (Group by Event Title)
+          // จัดกลุ่มผลลัพธ์แยกตามชื่อกิจกรรม
           const groupedEvents = {};
           data.results.forEach(item => {
             const title = item.event_title || item.title || "รูปกิจกรรมทั่วไป";
@@ -262,7 +262,7 @@
             groupedEvents[title].photos.push(item);
           });
 
-          // วนลูปสร้างบล็อกแสดงผลของแต่ละกิจกรรม
+          // สร้างการ์ดแสดงผลแยกแต่ละกิจกรรม
           Object.values(groupedEvents).forEach(eventGroup => {
             let photoCardsHtml = "";
 
@@ -271,18 +271,18 @@
               const scorePct = item.score ? (item.score * 100).toFixed(1) : null;
 
               photoCardsHtml += `
-                <div class="group glass-card rounded-2xl overflow-hidden shadow-xl hover:shadow-pink-500/10 border border-white/10 hover:border-pink-400/40 transition-all duration-300 flex flex-col justify-between">
-                  <div class="relative overflow-hidden aspect-[4/3] bg-black/30">
+                <div class="group glass-card rounded-xl overflow-hidden shadow-xl hover:shadow-indigo-500/10 border border-slate-800 hover:border-slate-700 transition-all duration-300 flex flex-col justify-between">
+                  <div class="relative overflow-hidden aspect-[4/3] bg-slate-950">
                     <img src="${imgUrl}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" onerror="this.src='https://via.placeholder.com/300?text=Error'">
                     ${scorePct ? `
-                      <div class="absolute top-2.5 right-2.5 bg-black/60 backdrop-blur-md border border-emerald-400/40 text-emerald-300 text-[11px] font-semibold px-2 py-0.5 rounded-full flex items-center gap-1">
+                      <div class="absolute top-2.5 right-2.5 bg-slate-950/80 backdrop-blur-md border border-emerald-500/40 text-emerald-400 text-[11px] font-semibold px-2 py-0.5 rounded-full flex items-center gap-1 shadow">
                         <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
                         ${scorePct}%
                       </div>
                     ` : ''}
                   </div>
-                  <div class="p-3 flex justify-end items-center border-t border-white/10 bg-white/[0.02]">
-                    <a href="${imgUrl}" target="_blank" class="text-[11px] bg-white/10 hover:bg-pink-500 text-white px-2.5 py-1 rounded-lg flex items-center gap-1 transition">
+                  <div class="p-3 flex justify-end items-center border-t border-slate-800/80 bg-slate-900/40">
+                    <a href="${imgUrl}" target="_blank" class="text-[11px] bg-slate-800 hover:bg-indigo-600 text-slate-200 hover:text-white px-2.5 py-1 rounded-lg flex items-center gap-1.5 transition">
                       <i class="fa-solid fa-up-right-from-square text-[10px]"></i> เปิดภาพเต็ม
                     </a>
                   </div>
@@ -290,20 +290,19 @@
               `;
             });
 
-            // สร้าง Header ของแต่ละกิจกรรม พร้อมจำนวนภาพ
             container.innerHTML += `
               <div class="space-y-3">
-                <div class="flex items-center justify-between bg-white/[0.04] border border-white/10 px-4 py-3 rounded-2xl">
+                <div class="flex items-center justify-between bg-slate-900/60 border border-slate-800 px-4 py-3 rounded-xl">
                   <div class="flex items-center gap-2.5">
-                    <div class="w-2 h-2 rounded-full bg-pink-400"></div>
-                    <h3 class="font-semibold text-sm md:text-base text-white">${eventGroup.title}</h3>
-                    ${eventGroup.date ? `<span class="text-xs text-pink-200/60 font-normal flex items-center gap-1"><i class="fa-regular fa-calendar-days text-[10px]"></i> ${eventGroup.date}</span>` : ''}
+                    <div class="w-2 h-2 rounded-full bg-indigo-500"></div>
+                    <h3 class="font-semibold text-sm md:text-base text-slate-200">${eventGroup.title}</h3>
+                    ${eventGroup.date ? `<span class="text-xs text-slate-400 font-normal flex items-center gap-1"><i class="fa-regular fa-calendar-days text-[10px]"></i> ${eventGroup.date}</span>` : ''}
                   </div>
-                  <span class="text-xs bg-white/10 text-pink-200 px-2.5 py-0.5 rounded-full font-light">
+                  <span class="text-xs bg-slate-800 text-slate-300 border border-slate-700 px-2.5 py-0.5 rounded-full">
                     ${eventGroup.photos.length} รูป
                   </span>
                 </div>
-                <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-5">
+                <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3.5 md:gap-4">
                   ${photoCardsHtml}
                 </div>
               </div>
@@ -314,7 +313,7 @@
           emptyState.classList.remove('hidden');
           emptyState.querySelector('p').innerText = "ไม่พบรูปภาพของคุณในกิจกรรมนี้ (คะแนนความคล้ายคลึงไม่ถึงเกณฑ์)";
           badge.innerText = `พบ 0 รูป`;
-          badge.className = "text-xs bg-rose-500/20 border border-rose-400/30 text-rose-300 px-3 py-1 rounded-full font-medium";
+          badge.className = "text-xs bg-rose-500/10 border border-rose-500/30 text-rose-400 px-3 py-1 rounded-full font-medium";
           statusMsg.innerText = "การค้นหาเสร็จสิ้น แต่ไม่พบบุคคลที่ตรงกัน";
         }
       } catch (err) {
@@ -332,9 +331,9 @@
       document.getElementById('search-status').classList.add('hidden');
       document.getElementById('events-container').innerHTML = "";
       document.getElementById('empty-state').classList.remove('hidden');
-      document.getElementById('empty-state').querySelector('p').innerText = "กรุณาอัปโหลดรูปใบหน้าของคุณเพื่อเริ่มต้นค้นหาภาพกิจกรรม";
+      document.getElementById('empty-state').querySelector('p').innerText = "อัปโหลดรูปหน้าของคุณที่กล่องด้านบน เพื่อให้ระบบค้นหาภาพกิจกรรมที่มีคุณ";
       document.getElementById('result-badge').innerText = "ยังไม่มีการค้นหา";
-      document.getElementById('result-badge').className = "text-xs bg-white/10 border border-white/10 text-pink-200 px-3 py-1 rounded-full";
+      document.getElementById('result-badge').className = "text-xs bg-slate-800/80 border border-slate-700 text-slate-400 px-3 py-1 rounded-full";
       
       document.getElementById('selfie-preview').classList.add('hidden');
       document.getElementById('default-icon').classList.remove('hidden');

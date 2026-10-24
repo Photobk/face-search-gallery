@@ -110,6 +110,9 @@
             const imgUrl = item.photo_url || item.image_url || item.url || "";
             const title = item.event_title || item.title || "รูปกิจกรรม";
             const date = item.event_date || item.date || "";
+            
+            // แสดงคะแนนความเหมือนเป็น % จาก Qdrant Score
+            const scorePct = item.score ? ` (ความแม่นยำ ${(item.score * 100).toFixed(1)}%)` : "";
 
             grid.innerHTML += `
               <div class="bg-white rounded-lg overflow-hidden shadow text-gray-800">
@@ -118,7 +121,7 @@
                 </a>
                 <div class="p-2 text-xs">
                   <p class="font-bold truncate text-[#8a154b]">${title}</p>
-                  <p class="text-gray-500">${date}</p>
+                  <p class="text-gray-500">${date} <span class="text-emerald-600 font-semibold">${scorePct}</span></p>
                 </div>
               </div>
             `;
@@ -138,7 +141,7 @@
       document.getElementById('photo-grid').innerHTML = "";
     }
 
-    // ฟังก์ชันย่อขนาดภาพก่อนแปลง Base64 เพื่อป้องกันคำขอขนาดใหญ่เกินพิกัด
+    // ฟังก์ชันย่อขนาดภาพก่อนแปลง Base64
     function resizeImage(file, maxWidth = 1200) {
       return new Promise((resolve) => {
         const reader = new FileReader();

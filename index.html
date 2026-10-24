@@ -2,7 +2,7 @@
 <html lang="th" class="dark">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>ระบบค้นหาภาพกิจกรรมด้วยใบหน้า | AI Face Search</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
@@ -19,7 +19,7 @@
     body { font-family: 'Prompt', sans-serif; transition: background-color 0.3s, color 0.3s; }
     
     .dark .glass-card {
-      background: rgba(15, 23, 42, 0.75);
+      background: rgba(15, 23, 42, 0.8);
       border: 1px solid rgba(255, 255, 255, 0.08);
     }
     .dark .glow-bg {
@@ -27,8 +27,8 @@
     }
 
     .glass-card {
-      background: rgba(255, 255, 255, 0.85);
-      border: 1px solid rgba(226, 232, 240, 0.8);
+      background: rgba(255, 255, 255, 0.9);
+      border: 1px solid rgba(226, 232, 240, 0.9);
     }
     .glow-bg {
       background: radial-gradient(circle, rgba(199, 210, 254, 0.4) 0%, rgba(224, 231, 255, 0.2) 50%, transparent 70%);
@@ -39,8 +39,9 @@
       top: 0;
       left: 50%;
       transform: translateX(-50%);
-      width: 800px;
-      height: 420px;
+      width: 100%;
+      max-width: 800px;
+      height: 400px;
       filter: blur(75px);
       z-index: -1;
       pointer-events: none;
@@ -57,9 +58,16 @@
     }
     #modal-album-photos {
       display: grid !important;
-      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)) !important;
-      column-gap: 1.25rem !important;
-      row-gap: 1.5rem !important;
+      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)) !important;
+      column-gap: 0.85rem !important;
+      row-gap: 1.15rem !important;
+    }
+    @media (min-width: 640px) {
+      #modal-album-photos {
+        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)) !important;
+        column-gap: 1.25rem !important;
+        row-gap: 1.5rem !important;
+      }
     }
     input[type="date"]::-webkit-calendar-picker-indicator {
       cursor: pointer;
@@ -70,20 +78,16 @@
       filter: invert(0.9);
     }
 
-    /* สไตล์ Neumorphism Switch แบบรูปภาพ */
     .switch-track {
-      box-shadow: inset 2px 2px 5px rgba(0, 0, 0, 0.12), inset -2px -2px 5px rgba(255, 255, 255, 0.8);
+      box-shadow: inset 2px 2px 4px rgba(0, 0, 0, 0.12), inset -2px -2px 4px rgba(255, 255, 255, 0.8);
       transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
     .dark .switch-track {
       box-shadow: inset 3px 3px 6px rgba(0, 0, 0, 0.6), inset -2px -2px 5px rgba(255, 255, 255, 0.05);
     }
     .switch-thumb {
-      box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2), -1px -1px 3px rgba(255, 255, 255, 0.7);
+      box-shadow: 1px 1px 4px rgba(0, 0, 0, 0.2);
       transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-    .dark .switch-thumb {
-      box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5), -1px -1px 3px rgba(255, 255, 255, 0.08);
     }
   </style>
 </head>
@@ -92,46 +96,40 @@
   <!-- Ambient Glow -->
   <div class="glow-bg-layer glow-bg"></div>
 
-  <!-- Navbar -->
-  <header class="w-full border-b border-slate-200 dark:border-slate-800 px-6 py-4 glass-card sticky top-0 z-40 backdrop-blur-md">
+  <!-- Navbar (Responsive สมบูรณ์แบบ) -->
+  <header class="w-full border-b border-slate-200 dark:border-slate-800 px-4 md:px-6 py-3.5 glass-card sticky top-0 z-40 backdrop-blur-md">
     <div class="max-w-6xl mx-auto flex justify-between items-center">
-      <div class="flex items-center gap-3">
-        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 to-blue-500 flex items-center justify-center shadow-lg shadow-indigo-500/20 text-white">
-          <i class="fa-solid fa-camera text-base"></i>
+      <div class="flex items-center gap-2.5">
+        <div class="w-9 h-9 md:w-10 md:h-10 rounded-xl bg-gradient-to-tr from-indigo-600 to-blue-500 flex items-center justify-center shadow-lg shadow-indigo-500/20 text-white shrink-0">
+          <i class="fa-solid fa-camera text-sm md:text-base"></i>
         </div>
         <div>
-          <h1 class="text-base md:text-lg font-bold tracking-tight text-slate-800 dark:text-white flex items-center gap-2">
+          <h1 class="text-sm md:text-lg font-bold tracking-tight text-slate-800 dark:text-white flex items-center gap-1.5">
             คลังภาพจังหวัดบึงกาฬ 
-            <span class="text-[10px] bg-indigo-50 text-indigo-600 dark:bg-indigo-500/10 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-400/20 px-2 py-0.5 rounded-full font-normal">AI Powered</span>
+            <span class="text-[9px] md:text-[10px] bg-indigo-50 text-indigo-600 dark:bg-indigo-500/10 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-400/20 px-1.5 py-0.5 rounded-full font-normal">AI</span>
           </h1>
-          <p class="text-xs text-slate-500 dark:text-slate-400">ค้นหารูปถ่ายของคุณได้ง่ายๆ พัฒนาโดย กลุ่มนโยบายและวิชาการ สนง.พมจ.บึงกาฬ</p>
+          <p class="text-[10px] md:text-xs text-slate-500 dark:text-slate-400 line-clamp-1">สนง.พมจ.บึงกาฬ</p>
         </div>
       </div>
 
-      <div class="flex items-center gap-4">
-        <!-- สวิตช์สลับโหมดตามแบบรูปที่ 1 (Neumorphism Toggle Switch) -->
-        <div class="flex items-center gap-2">
-          <!-- ไอคอนดวงอาทิตย์ -->
-          <i id="sun-icon" class="fa-regular fa-sun text-sm transition-colors text-amber-500 dark:text-slate-500"></i>
-          
-          <!-- รางสวิตช์ -->
+      <div class="flex items-center gap-3">
+        <!-- Switch Dark / Light Mode -->
+        <div class="flex items-center gap-1.5">
+          <i id="sun-icon" class="fa-regular fa-sun text-xs text-amber-500 dark:text-slate-500"></i>
           <button 
             type="button" 
             onclick="toggleTheme()" 
-            class="switch-track relative w-12 h-6 rounded-full bg-slate-200 dark:bg-[#1a2234] p-0.5 focus:outline-none flex items-center cursor-pointer"
+            class="switch-track relative w-11 h-6 rounded-full bg-slate-200 dark:bg-[#1a2234] p-0.5 focus:outline-none flex items-center cursor-pointer"
             title="สลับโหมด สว่าง / มืด"
           >
-            <!-- ปุ่มกลมเลื่อนซ้าย-ขวา -->
             <div id="switch-thumb" class="switch-thumb w-5 h-5 rounded-full bg-white dark:bg-[#334155] transform transition-transform"></div>
           </button>
-
-          <!-- ไอคอนดวงจันทร์ -->
-          <i id="moon-icon" class="fa-regular fa-moon text-sm transition-colors text-slate-400 dark:text-indigo-400"></i>
+          <i id="moon-icon" class="fa-regular fa-moon text-xs text-slate-400 dark:text-indigo-400"></i>
         </div>
 
         <!-- ปุ่มอัปโหลดรูปภาพ -->
-        <button onclick="toggleUploadModal(true)" class="group flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white dark:bg-indigo-600/20 dark:hover:bg-indigo-600/30 dark:text-indigo-200 dark:hover:text-white border border-transparent dark:border-indigo-500/30 px-3.5 py-2 rounded-xl text-xs font-medium transition duration-200 active:scale-95 shadow-sm">
-          <i class="fa-solid fa-cloud-arrow-up text-indigo-200 dark:text-indigo-400 group-hover:scale-110 transition-transform"></i>
+        <button onclick="toggleUploadModal(true)" class="group flex items-center gap-1.5 bg-indigo-600 hover:bg-indigo-700 text-white dark:bg-indigo-600/20 dark:hover:bg-indigo-600/30 dark:text-indigo-200 dark:hover:text-white border border-transparent dark:border-indigo-500/30 px-3 py-1.5 md:px-3.5 md:py-2 rounded-xl text-xs font-medium transition duration-200 active:scale-95 shadow-sm shrink-0">
+          <i class="fa-solid fa-cloud-arrow-up text-indigo-200 dark:text-indigo-400"></i>
           <span class="hidden sm:inline">อัปโหลดรูปภาพ</span>
           <span class="sm:hidden">อัปโหลด</span>
         </button>
@@ -140,28 +138,28 @@
   </header>
 
   <!-- Main Container -->
-  <main class="max-w-6xl w-full mx-auto p-4 md:p-8 flex-1 flex flex-col space-y-12">
+  <main class="max-w-6xl w-full mx-auto p-4 md:p-8 flex-1 flex flex-col space-y-10">
     
     <!-- Top Hero Section (Search Bar & Face Scan) -->
-    <section class="max-w-2xl w-full mx-auto flex flex-col items-center space-y-5">
+    <section class="max-w-2xl w-full mx-auto flex flex-col items-center space-y-4">
       
-      <!-- Search Bar -->
-      <div class="w-full relative shadow-lg rounded-2xl">
-        <span class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-slate-400 dark:text-slate-400">
-          <i class="fa-solid fa-magnifying-glass text-sm"></i>
+      <!-- 1. Search Bar -->
+      <div class="w-full relative shadow-md rounded-2xl">
+        <span class="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none text-slate-400">
+          <i class="fa-solid fa-magnifying-glass text-xs md:text-sm"></i>
         </span>
         <input 
           type="text" 
           id="album-search-input" 
           oninput="filterAlbums()" 
-          placeholder="ค้นหาชื่อกิจกรรม หรือ วันที่ (เช่น ประชุม, สัมพันธ์, 2026)..." 
-          class="w-full pl-11 pr-11 py-3.5 text-sm rounded-2xl bg-white dark:bg-slate-900/95 border border-slate-200 dark:border-slate-700/80 text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-400 focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/25 transition shadow-sm backdrop-blur-md"
+          placeholder="ค้นหาชื่อกิจกรรม หรือ วันที่..." 
+          class="w-full pl-10 pr-10 py-3 text-xs md:text-sm rounded-2xl bg-white dark:bg-slate-900/95 border border-slate-200 dark:border-slate-700/80 text-slate-800 dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/25 transition shadow-sm backdrop-blur-md"
         >
         <button 
           type="button" 
           id="clear-album-search" 
           onclick="clearAlbumSearch()" 
-          class="hidden absolute inset-y-0 right-0 flex items-center pr-4 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition text-sm"
+          class="hidden absolute inset-y-0 right-0 flex items-center pr-3.5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition text-xs md:text-sm"
         >
           <i class="fa-solid fa-circle-xmark"></i>
         </button>
@@ -170,17 +168,17 @@
       <!-- เส้นแบ่ง -->
       <div class="w-full flex items-center gap-3 px-2">
         <div class="flex-1 h-px bg-slate-200 dark:bg-slate-800"></div>
-        <span class="text-[11px] font-medium text-slate-400 dark:text-slate-500 tracking-wider uppercase">หรือ ค้นหาด้วยใบหน้าของคุณ</span>
+        <span class="text-[10px] md:text-[11px] font-medium text-slate-400 dark:text-slate-500 tracking-wider uppercase">หรือ ค้นหาด้วยใบหน้าของคุณ</span>
         <div class="flex-1 h-px bg-slate-200 dark:bg-slate-800"></div>
       </div>
 
-      <!-- กล่องสแกนใบหน้า -->
-      <div class="w-full glass-card rounded-2xl p-6 md:p-7 shadow-xl relative overflow-hidden transition-all duration-300 backdrop-blur-md text-center">
+      <!-- 2. กล่องสแกนใบหน้า (เพิ่มตัวเลือก อัปโหลดรูป / ถ่ายจากกล้องสด) -->
+      <div class="w-full glass-card rounded-2xl p-5 md:p-7 shadow-xl relative overflow-hidden transition-all duration-300 backdrop-blur-md text-center">
         
-        <label for="search-input" class="cursor-pointer flex flex-col items-center justify-center border-2 border-dashed border-slate-300 dark:border-slate-700 hover:border-indigo-500 dark:hover:border-indigo-400 rounded-xl p-6 md:p-8 transition-all duration-300 hover:bg-slate-50 dark:hover:bg-slate-800/40 group relative">
-          
-          <div id="preview-container" class="relative w-20 h-20 rounded-2xl overflow-hidden bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 flex items-center justify-center mb-3 shadow-inner group-hover:scale-105 transition-transform">
-            <svg id="default-icon" class="w-10 h-10 text-indigo-500 dark:text-indigo-400 group-hover:text-indigo-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <!-- Preview Box -->
+        <div class="flex flex-col items-center justify-center">
+          <div id="preview-container" class="relative w-20 h-20 rounded-2xl overflow-hidden bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 flex items-center justify-center mb-3 shadow-inner">
+            <svg id="default-icon" class="w-9 h-9 text-indigo-500 dark:text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
             </svg>
@@ -188,14 +186,29 @@
             <div id="scan-bar" class="hidden absolute top-0 left-0 w-full scan-line"></div>
           </div>
 
-          <span class="text-sm font-semibold text-slate-800 dark:text-slate-100 group-hover:text-indigo-600 dark:group-hover:text-indigo-300 transition-colors block">กดเลือกรูปหน้าตรง หรือ ถ่ายเซลฟี่</span>
-          <span class="text-xs text-slate-500 dark:text-slate-400 block mt-1">AI จะค้นหารูปกิจกรรมทั้งหมดที่มีคุณโดยอัตโนมัติ</span>
+          <h3 class="text-sm font-semibold text-slate-800 dark:text-slate-100 mb-1">ค้นหาภาพถ่ายของคุณ</h3>
+          <p class="text-xs text-slate-500 dark:text-slate-400 mb-4">เลือกภาพถ่ายหน้าตรง หรือ เปิดกล้องถ่ายภาพของคุณตอนนี้</p>
 
-          <input id="search-input" type="file" accept="image/*" class="hidden" onchange="searchFace(event)">
-        </label>
+          <!-- ปุ่มแยก 2 ตัวเลือกชัดเจน -->
+          <div class="flex flex-col sm:flex-row items-center justify-center gap-2.5 w-full max-w-sm">
+            <!-- ปุ่มเลือกรูปจากเครื่อง -->
+            <label for="search-input" class="w-full sm:w-1/2 flex items-center justify-center gap-2 px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-medium cursor-pointer transition active:scale-95 shadow-sm">
+              <i class="fa-regular fa-image text-indigo-500 text-sm"></i>
+              <span>เลือกรูปในเครื่อง</span>
+            </label>
+            <input id="search-input" type="file" accept="image/*" class="hidden" onchange="searchFace(event)">
 
+            <!-- ปุ่มเปิดกล้องถ่ายสด -->
+            <button type="button" onclick="openCameraModal()" class="w-full sm:w-1/2 flex items-center justify-center gap-2 px-3.5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-medium transition active:scale-95 shadow-sm">
+              <i class="fa-solid fa-camera text-sm"></i>
+              <span>เปิดกล้องถ่ายรูป</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- กล่องสถานะการค้นหา -->
         <div id="search-status" class="hidden mt-4 pt-4 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between">
-          <div class="flex items-center gap-2.5 text-xs text-indigo-600 dark:text-indigo-300">
+          <div class="flex items-center gap-2 text-xs text-indigo-600 dark:text-indigo-300">
             <i id="status-spinner" class="fa-solid fa-circle-notch fa-spin text-indigo-500 text-sm"></i>
             <span id="status-msg" class="text-slate-700 dark:text-slate-300 font-medium">กำลังค้นหา...</span>
           </div>
@@ -209,51 +222,79 @@
 
     <!-- Results Section (เฉพาะรูปที่ค้นพบ) -->
     <section>
-      <div class="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3 mb-5">
+      <div class="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3 mb-4 md:mb-5">
         <div class="flex items-center gap-2">
           <i class="fa-solid fa-user-check text-indigo-500 dark:text-indigo-400"></i>
           <h2 class="text-sm md:text-base font-semibold text-slate-800 dark:text-white">รูปภาพที่ค้นพบ</h2>
         </div>
-        <span id="result-badge" class="text-xs bg-slate-100 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400 px-3 py-0.5 rounded-full">ยังไม่มีการค้นหา</span>
+        <span id="result-badge" class="text-xs bg-slate-100 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400 px-2.5 py-0.5 rounded-full">ยังไม่มีการค้นหา</span>
       </div>
 
       <div id="empty-search-state" class="text-center py-8 text-slate-400 dark:text-slate-500 border border-dashed border-slate-200 dark:border-slate-800 rounded-2xl">
         <p class="text-xs">อัปโหลดภาพใบหน้าด้านบนเพื่อดูภาพที่คุณเข้าร่วมกิจกรรม</p>
       </div>
 
-      <div id="photo-grid" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+      <div id="photo-grid" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4">
         <!-- การ์ดภาพผลการค้นหาจะแสดงที่นี่ -->
       </div>
     </section>
 
     <!-- Albums Section (อัลบั้มกิจกรรมทั้งหมด) -->
     <section class="pt-4 border-t border-slate-200 dark:border-slate-800/80">
-      <div class="flex items-center justify-between pb-3 mb-5">
-        <div class="flex items-center gap-2.5">
-          <div class="w-8 h-8 rounded-lg bg-blue-50 dark:bg-blue-500/10 border border-blue-200 dark:border-blue-400/20 flex items-center justify-center text-blue-600 dark:text-blue-400">
-            <i class="fa-solid fa-folder-open text-sm"></i>
-          </div>
-          <div>
-            <h2 class="text-sm md:text-base font-semibold text-slate-800 dark:text-white">อัลบั้มกิจกรรมทั้งหมด</h2>
-            <p id="album-count" class="text-[11px] text-slate-500 dark:text-slate-400">กำลังโหลดอัลบั้ม...</p>
-          </div>
+      <div class="flex items-center justify-between pb-3 mb-4 md:mb-5">
+        <div class="flex items-center gap-2">
+          <i class="fa-solid fa-folder-open text-blue-500 dark:text-blue-400"></i>
+          <h2 class="text-sm md:text-base font-semibold text-slate-800 dark:text-white">อัลบั้มกิจกรรมทั้งหมด</h2>
         </div>
+        <p id="album-count" class="text-[11px] text-slate-500 dark:text-slate-400">กำลังโหลด...</p>
       </div>
 
-      <div id="albums-grid" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+      <div id="albums-grid" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4">
         <!-- การ์ดอัลบั้มกิจกรรมจะแสดงที่นี่ -->
       </div>
     </section>
 
   </main>
 
+  <!-- ================= Modal เปิดกล้องถ่ายภาพสด (Camera Live Capture) ================= -->
+  <div id="camera-modal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-md flex items-center justify-center p-4 z-50">
+    <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-sm w-full p-5 text-white flex flex-col items-center relative shadow-2xl">
+      <div class="w-full flex justify-between items-center mb-3">
+        <h3 class="text-sm font-semibold flex items-center gap-2">
+          <i class="fa-solid fa-camera text-indigo-400"></i> ถ่ายภาพเซลฟี่
+        </h3>
+        <button onclick="closeCameraModal()" class="text-slate-400 hover:text-white text-lg p-1">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <!-- Video Feed & Guideline Overlay -->
+      <div class="relative w-full aspect-square rounded-xl overflow-hidden bg-black border border-slate-800 mb-4">
+        <video id="camera-feed" autoplay playsinline muted class="w-full h-full object-cover transform -scale-x-100"></video>
+        <!-- กรอบไกด์เล็งใบหน้า -->
+        <div class="absolute inset-0 border-2 border-dashed border-indigo-400/50 rounded-full m-8 pointer-events-none"></div>
+      </div>
+
+      <canvas id="camera-canvas" class="hidden"></canvas>
+
+      <div class="w-full flex gap-2">
+        <button type="button" onclick="closeCameraModal()" class="flex-1 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-medium text-slate-300 transition">
+          ยกเลิก
+        </button>
+        <button type="button" onclick="capturePhoto()" class="flex-1 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-xs font-medium text-white transition active:scale-95 shadow-lg shadow-indigo-600/30 flex items-center justify-center gap-1.5">
+          <i class="fa-solid fa-camera"></i> ถ่ายภาพ
+        </button>
+      </div>
+    </div>
+  </div>
+
   <!-- Modal สำหรับเปิดดูรูปทั้งหมดในอัลบั้ม -->
-  <div id="album-view-modal" class="hidden fixed inset-0 bg-black/60 dark:bg-black/80 backdrop-blur-md flex items-center justify-center p-4 z-50">
-    <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl max-w-4xl w-full max-h-[88vh] flex flex-col p-5 md:p-6 shadow-2xl relative">
+  <div id="album-view-modal" class="hidden fixed inset-0 bg-black/60 dark:bg-black/80 backdrop-blur-md flex items-center justify-center p-3 md:p-4 z-50">
+    <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl max-w-4xl w-full max-h-[90vh] flex flex-col p-4 md:p-6 shadow-2xl relative">
       
       <div class="flex justify-between items-center pb-3 border-b border-slate-200 dark:border-slate-800">
         <div>
-          <h3 id="modal-album-title" class="font-bold text-sm md:text-base text-slate-800 dark:text-white">ชื่อกิจกรรม</h3>
+          <h3 id="modal-album-title" class="font-bold text-sm md:text-base text-slate-800 dark:text-white line-clamp-1">ชื่อกิจกรรม</h3>
           <p id="modal-album-date" class="text-xs text-slate-500 dark:text-slate-400 mt-0.5"></p>
         </div>
         <button type="button" onclick="toggleAlbumModal(false)" class="text-slate-400 hover:text-slate-600 dark:hover:text-white text-lg p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition">
@@ -261,7 +302,7 @@
         </button>
       </div>
 
-      <div id="modal-album-photos" class="overflow-y-auto my-4 p-2 pr-3 max-h-[65vh]">
+      <div id="modal-album-photos" class="overflow-y-auto my-3 md:my-4 p-1 pr-2 max-h-[65vh]">
         <!-- รูปภาพจะถูกสร้างขึ้นมาในนี้ -->
       </div>
 
@@ -273,8 +314,8 @@
 
   <!-- Modal อัปโหลดรูปภาพเป็นอัลบั้ม -->
   <div id="upload-modal" class="hidden fixed inset-0 bg-black/60 dark:bg-black/80 backdrop-blur-md flex items-center justify-center p-4 z-50">
-    <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl max-w-md w-full p-6 shadow-2xl text-slate-800 dark:text-slate-100 relative">
-      <div class="flex justify-between items-center mb-5 pb-3 border-b border-slate-200 dark:border-slate-800">
+    <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl max-w-md w-full p-5 md:p-6 shadow-2xl text-slate-800 dark:text-slate-100 relative">
+      <div class="flex justify-between items-center mb-4 pb-3 border-b border-slate-200 dark:border-slate-800">
         <div class="flex items-center gap-2.5">
           <div class="w-8 h-8 rounded-lg bg-indigo-50 dark:bg-indigo-500/10 border border-indigo-200 dark:border-indigo-400/20 flex items-center justify-center text-indigo-600 dark:text-indigo-400">
             <i class="fa-solid fa-cloud-arrow-up text-sm"></i>
@@ -328,7 +369,60 @@
     const FOLDER_ID = "1LL0fqqxFG9-bAwaUMsaOL90of0ZOsvct";
 
     let loadedAlbums = [];
+    let mediaStream = null;
     document.getElementById('ev-date').valueAsDate = new Date();
+
+    // ================= ระบบเปิดกล้องถ่ายภาพสด (Camera Handler) =================
+    async function openCameraModal() {
+      const modal = document.getElementById('camera-modal');
+      const video = document.getElementById('camera-feed');
+      modal.classList.remove('hidden');
+
+      try {
+        // ขอเปิดกล้องหน้า (facingMode: 'user')
+        mediaStream = await navigator.mediaDevices.getUserMedia({
+          video: { facingMode: 'user', width: { ideal: 720 }, height: { ideal: 720 } },
+          audio: false
+        });
+        video.srcObject = mediaStream;
+      } catch (err) {
+        console.error("Camera Error:", err);
+        alert("ไม่สามารถเข้าถึงกล้องถ่ายภาพได้ กรุณาอนุญาตสิทธิ์การเข้าถึงกล้องในเบราว์เซอร์");
+        closeCameraModal();
+      }
+    }
+
+    function closeCameraModal() {
+      const modal = document.getElementById('camera-modal');
+      const video = document.getElementById('camera-feed');
+      if (mediaStream) {
+        mediaStream.getTracks().forEach(track => track.stop());
+        mediaStream = null;
+      }
+      video.srcObject = null;
+      modal.classList.add('hidden');
+    }
+
+    function capturePhoto() {
+      const video = document.getElementById('camera-feed');
+      const canvas = document.getElementById('camera-canvas');
+      if (!video.videoWidth) return;
+
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+      const ctx = canvas.getContext('2d');
+      // พลิกกระจกภาพเซลฟี่ให้เป็นธรรมชาติ
+      ctx.translate(canvas.width, 0);
+      ctx.scale(-1, 1);
+      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+      canvas.toBlob((blob) => {
+        closeCameraModal();
+        const file = new File([blob], "camera_selfie.jpg", { type: "image/jpeg" });
+        // ส่งภาพไปค้นหาทันที
+        executeSearch(file);
+      }, 'image/jpeg', 0.9);
+    }
 
     // ฟังก์ชันดาวน์โหลดภาพจาก Google Drive
     function downloadPhoto(url, filename = "event-photo.jpg") {
@@ -349,7 +443,7 @@
       }
     }
 
-    // ================= ระบบสลับ Dark / Light Mode (Neumorphism Switch) =================
+    // ================= ระบบสลับ Dark / Light Mode =================
     function initTheme() {
       const savedTheme = localStorage.getItem('theme');
       const isDark = savedTheme ? savedTheme === 'dark' : window.matchMedia('(prefers-color-scheme: dark)').matches;
@@ -368,15 +462,15 @@
 
       if (isDark) {
         document.documentElement.classList.add('dark');
-        if (thumb) thumb.style.transform = "translateX(24px)";
-        if (sunIcon) sunIcon.className = "fa-regular fa-sun text-sm transition-colors text-slate-500";
-        if (moonIcon) moonIcon.className = "fa-solid fa-moon text-sm transition-colors text-indigo-400";
+        if (thumb) thumb.style.transform = "translateX(20px)";
+        if (sunIcon) sunIcon.className = "fa-regular fa-sun text-xs text-slate-500";
+        if (moonIcon) moonIcon.className = "fa-solid fa-moon text-xs text-indigo-400";
         localStorage.setItem('theme', 'dark');
       } else {
         document.documentElement.classList.remove('dark');
         if (thumb) thumb.style.transform = "translateX(0px)";
-        if (sunIcon) sunIcon.className = "fa-solid fa-sun text-sm transition-colors text-amber-500";
-        if (moonIcon) moonIcon.className = "fa-regular fa-moon text-sm transition-colors text-slate-400";
+        if (sunIcon) sunIcon.className = "fa-solid fa-sun text-xs text-amber-500";
+        if (moonIcon) moonIcon.className = "fa-regular fa-moon text-xs text-slate-400";
         localStorage.setItem('theme', 'light');
       }
     }
@@ -406,7 +500,7 @@
         renderAlbums(loadedAlbums);
       } catch (err) {
         console.error("Error loading albums:", err);
-        albumCount.innerText = "ไม่สามารถโหลดอัลบั้มได้";
+        albumCount.innerText = "โหลดอัลบั้มไม่สำเร็จ";
       }
     }
 
@@ -415,13 +509,13 @@
       const albumCount = document.getElementById('album-count');
       
       albumsGrid.innerHTML = "";
-      albumCount.innerText = `แสดง ${albumsToRender.length} จากทั้งหมด ${loadedAlbums.length} กิจกรรม`;
+      albumCount.innerText = `แสดง ${albumsToRender.length} จาก ${loadedAlbums.length} กิจกรรม`;
 
       if (albumsToRender.length === 0) {
         albumsGrid.innerHTML = `
-          <div class="col-span-full text-center py-10 text-slate-400">
-            <i class="fa-regular fa-folder-open text-3xl mb-2 text-slate-300 dark:text-slate-600"></i>
-            <p class="text-xs">ไม่พบอัลบั้มกิจกรรมที่ใกล้เคียงกับคำค้นหา</p>
+          <div class="col-span-full text-center py-8 text-slate-400">
+            <i class="fa-regular fa-folder-open text-2xl mb-1 text-slate-300 dark:text-slate-600"></i>
+            <p class="text-xs">ไม่พบอัลบั้มกิจกรรม</p>
           </div>
         `;
         return;
@@ -435,22 +529,22 @@
             <div class="relative overflow-hidden aspect-[4/3] bg-slate-100 dark:bg-slate-950">
               <img src="${album.cover_url}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" onerror="this.src='https://via.placeholder.com/300?text=Album'">
               <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent"></div>
-              <div class="absolute bottom-2 left-2 right-2 flex justify-between items-end">
-                <span class="text-[10px] bg-black/60 backdrop-blur border border-white/20 text-white px-2 py-0.5 rounded-md flex items-center gap-1">
-                  <i class="fa-regular fa-images text-[9px]"></i> ${album.total_photos} รูป
+              <div class="absolute bottom-1.5 left-1.5 right-1.5 flex justify-between items-end">
+                <span class="text-[9px] md:text-[10px] bg-black/60 backdrop-blur border border-white/20 text-white px-2 py-0.5 rounded-md flex items-center gap-1">
+                  <i class="fa-regular fa-images text-[8px]"></i> ${album.total_photos} รูป
                 </span>
               </div>
             </div>
-            <div class="p-3 bg-white dark:bg-slate-900/60">
+            <div class="p-2.5 md:p-3 bg-white dark:bg-slate-900/60">
               <h4 class="font-medium text-xs text-slate-800 dark:text-white truncate group-hover:text-indigo-600 dark:group-hover:text-indigo-300 transition-colors">${album.title}</h4>
-              <p class="text-[10px] text-slate-500 dark:text-slate-400 mt-0.5"><i class="fa-regular fa-calendar-days text-[9px] mr-1"></i>${album.date || 'ไม่ระบุวันที่'}</p>
+              <p class="text-[9px] md:text-[10px] text-slate-500 dark:text-slate-400 mt-0.5"><i class="fa-regular fa-calendar-days text-[8px] mr-1"></i>${album.date || 'ไม่ระบุวันที่'}</p>
             </div>
           </div>
         `;
       });
     }
 
-    // ================= ค้นหาคำใกล้เคียง (Fuzzy Search) =================
+    // ================= ค้นหากิจกรรมแบบคำใกล้เคียง (Fuzzy Match) =================
     function isSubsequence(pattern, str) {
       let pIdx = 0, sIdx = 0;
       while (pIdx < pattern.length && sIdx < str.length) {
@@ -560,11 +654,11 @@
               <img src="${url}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" onerror="this.src='https://via.placeholder.com/300?text=Error'">
             </div>
             <div class="p-2 bg-white dark:bg-slate-900 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between gap-1.5">
-              <a href="${url}" target="_blank" class="flex-1 text-center py-1 px-2 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-[10px] text-slate-700 dark:text-slate-300 transition flex items-center justify-center gap-1">
-                <i class="fa-solid fa-up-right-from-square text-[9px]"></i> ขยาย
+              <a href="${url}" target="_blank" class="flex-1 text-center py-1 px-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-[10px] text-slate-700 dark:text-slate-300 transition flex items-center justify-center gap-1">
+                <i class="fa-solid fa-up-right-from-square text-[8px]"></i> ขยาย
               </a>
-              <button onclick="downloadPhoto('${url}', '${album.title}_${i+1}.jpg')" class="flex-1 text-center py-1 px-2 rounded-lg bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-600/20 dark:hover:bg-indigo-600/30 text-indigo-600 dark:text-indigo-300 text-[10px] font-medium transition flex items-center justify-center gap-1 active:scale-95">
-                <i class="fa-solid fa-download text-[9px]"></i> โหลด
+              <button onclick="downloadPhoto('${url}', '${album.title}_${i+1}.jpg')" class="flex-1 text-center py-1 px-1.5 rounded-lg bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-600/20 dark:hover:bg-indigo-600/30 text-indigo-600 dark:text-indigo-300 text-[10px] font-medium transition flex items-center justify-center gap-1 active:scale-95">
+                <i class="fa-solid fa-download text-[8px]"></i> โหลด
               </button>
             </div>
           </div>
@@ -574,10 +668,14 @@
       toggleAlbumModal(true);
     }
 
-    async function searchFace(event) {
+    // ฟังก์ชันค้นหาใบหน้าจากไฟล์ที่เลือก
+    function searchFace(event) {
       const file = event.target.files[0];
-      if (!file) return;
+      if (file) executeSearch(file);
+    }
 
+    // ฟังก์ชันประมวลผลการค้นหาใบหน้า
+    async function executeSearch(file) {
       const reader = new FileReader();
       reader.onload = (e) => {
         const preview = document.getElementById('selfie-preview');
@@ -617,7 +715,7 @@
           emptyState.classList.add('hidden');
           statusMsg.innerText = "ค้นหาเสร็จสิ้น";
           badge.innerText = `พบภาพที่ตรงกัน ${data.results.length} รูป`;
-          badge.className = "text-xs bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-200 dark:border-emerald-500/30 text-emerald-600 dark:text-emerald-400 px-3 py-0.5 rounded-full font-medium";
+          badge.className = "text-xs bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-200 dark:border-emerald-500/30 text-emerald-600 dark:text-emerald-400 px-2.5 py-0.5 rounded-full font-medium";
 
           data.results.forEach((item, idx) => {
             const imgUrl = item.photo_url || item.image_url || item.url || "";
@@ -636,17 +734,17 @@
                     </div>
                   ` : ''}
                 </div>
-                <div class="p-3 bg-white dark:bg-slate-900/60 flex flex-col justify-between flex-1">
+                <div class="p-2.5 md:p-3 bg-white dark:bg-slate-900/60 flex flex-col justify-between flex-1">
                   <div>
                     <h3 class="font-medium text-xs text-slate-800 dark:text-slate-200 line-clamp-2" title="${title}">${title}</h3>
-                    <p class="text-[10px] text-slate-500 dark:text-slate-400 mt-1"><i class="fa-regular fa-calendar-days text-[9px] mr-1"></i>${date}</p>
+                    <p class="text-[9px] md:text-[10px] text-slate-500 dark:text-slate-400 mt-1"><i class="fa-regular fa-calendar-days text-[8px] mr-1"></i>${date}</p>
                   </div>
-                  <div class="mt-3 pt-2 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between gap-1.5">
-                    <a href="${imgUrl}" target="_blank" class="flex-1 text-center py-1.5 px-2 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-[11px] text-slate-700 dark:text-slate-300 transition flex items-center justify-center gap-1">
-                      <i class="fa-solid fa-arrow-up-right-from-square text-[9px]"></i> เปิดเต็ม
+                  <div class="mt-2.5 pt-2 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between gap-1.5">
+                    <a href="${imgUrl}" target="_blank" class="flex-1 text-center py-1.5 px-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-[10px] text-slate-700 dark:text-slate-300 transition flex items-center justify-center gap-1">
+                      <i class="fa-solid fa-arrow-up-right-from-square text-[8px]"></i> เปิดเต็ม
                     </a>
-                    <button onclick="downloadPhoto('${imgUrl}', 'search_result_${idx+1}.jpg')" class="flex-1 text-center py-1.5 px-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-[11px] font-medium transition flex items-center justify-center gap-1 shadow-sm active:scale-95">
-                      <i class="fa-solid fa-download text-[9px]"></i> ดาวน์โหลด
+                    <button onclick="downloadPhoto('${imgUrl}', 'search_result_${idx+1}.jpg')" class="flex-1 text-center py-1.5 px-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-[10px] font-medium transition flex items-center justify-center gap-1 shadow-sm active:scale-95">
+                      <i class="fa-solid fa-download text-[8px]"></i> ดาวน์โหลด
                     </button>
                   </div>
                 </div>
@@ -657,7 +755,7 @@
           emptyState.classList.remove('hidden');
           emptyState.querySelector('p').innerText = "ไม่พบรูปภาพของคุณในกิจกรรมนี้";
           badge.innerText = `พบ 0 รูป`;
-          badge.className = "text-xs bg-rose-50 dark:bg-rose-500/10 border border-rose-200 dark:border-rose-500/30 text-rose-600 dark:text-rose-400 px-3 py-0.5 rounded-full font-medium";
+          badge.className = "text-xs bg-rose-50 dark:bg-rose-500/10 border border-rose-200 dark:border-rose-500/30 text-rose-600 dark:text-rose-400 px-2.5 py-0.5 rounded-full font-medium";
           statusMsg.innerText = "ไม่พบบุคคลที่ตรงกัน";
         }
       } catch (err) {
@@ -677,7 +775,7 @@
       document.getElementById('empty-search-state').classList.remove('hidden');
       document.getElementById('empty-search-state').querySelector('p').innerText = "อัปโหลดภาพใบหน้าด้านบนเพื่อดูภาพที่คุณเข้าร่วมกิจกรรม";
       document.getElementById('result-badge').innerText = "ยังไม่มีการค้นหา";
-      document.getElementById('result-badge').className = "text-xs bg-slate-100 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400 px-3 py-0.5 rounded-full";
+      document.getElementById('result-badge').className = "text-xs bg-slate-100 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400 px-2.5 py-0.5 rounded-full";
       
       document.getElementById('selfie-preview').classList.add('hidden');
       document.getElementById('default-icon').classList.remove('hidden');

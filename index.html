@@ -147,23 +147,27 @@
 
   </main>
 
-  <!-- Modal สำหรับเปิดดูรูปทั้งหมดในอัลบั้ม -->
+  <!-- Modal สำหรับเปิดดูรูปทั้งหมดในอัลบั้ม (ปรับแต่งระยะห่างใหม่) -->
   <div id="album-view-modal" class="hidden fixed inset-0 glass-modal flex items-center justify-center p-4 z-50">
-    <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-4xl w-full max-h-[85vh] flex flex-col p-5 shadow-2xl relative">
+    <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-4xl w-full max-h-[88vh] flex flex-col p-5 md:p-6 shadow-2xl relative">
+      
       <div class="flex justify-between items-center pb-3 border-b border-slate-800">
         <div>
           <h3 id="modal-album-title" class="font-bold text-sm md:text-base text-white">ชื่อกิจกรรม</h3>
           <p id="modal-album-date" class="text-xs text-slate-400 mt-0.5"></p>
         </div>
-        <button type="button" onclick="toggleAlbumModal(false)" class="text-slate-400 hover:text-white text-lg p-1">
+        <button type="button" onclick="toggleAlbumModal(false)" class="text-slate-400 hover:text-white text-lg p-1.5 rounded-lg hover:bg-slate-800 transition">
           <i class="fa-solid fa-xmark"></i>
         </button>
       </div>
-      <div id="modal-album-photos" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 overflow-y-auto my-4 pr-1">
+
+      <!-- ช่องแสดงรูปภาพแบบโปร่ง ไม่เบียดกัน -->
+      <div id="modal-album-photos" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 md:gap-5 overflow-y-auto my-4 p-2 pr-3 max-h-[65vh]">
         <!-- รูปในอัลบั้มจะแสดงที่นี่ -->
       </div>
-      <div class="pt-2 border-t border-slate-800 flex justify-end">
-        <button type="button" onclick="toggleAlbumModal(false)" class="px-4 py-1.5 bg-slate-800 hover:bg-slate-700 text-xs text-slate-300 rounded-xl transition">ปิด</button>
+
+      <div class="pt-3 border-t border-slate-800 flex justify-end">
+        <button type="button" onclick="toggleAlbumModal(false)" class="px-5 py-2 bg-slate-800 hover:bg-slate-700 text-xs font-medium text-slate-200 rounded-xl transition active:scale-95">ปิด</button>
       </div>
     </div>
   </div>
@@ -216,7 +220,6 @@
     let loadedAlbums = [];
     document.getElementById('ev-date').valueAsDate = new Date();
 
-    // โหลดอัลบั้มกิจกรรมทันทีเมื่อเปิดหน้าเว็บ
     window.addEventListener('DOMContentLoaded', loadAlbums);
 
     function toggleUploadModal(show) {
@@ -271,6 +274,7 @@
       }
     }
 
+    // ฟังก์ชันเปิดดูรูปในอัลบั้ม พร้อมจัดระเบียบภาพให้สวยงาม
     function openAlbumView(index) {
       const album = loadedAlbums[index];
       if (!album) return;
@@ -283,9 +287,14 @@
       
       album.photos.forEach(url => {
         photosBox.innerHTML += `
-          <div class="relative rounded-lg overflow-hidden border border-slate-800 aspect-[4/3] bg-black">
-            <a href="${url}" target="_blank">
-              <img src="${url}" class="w-full h-full object-cover hover:opacity-80 transition" onerror="this.src='https://via.placeholder.com/300?text=Error'">
+          <div class="group relative rounded-xl overflow-hidden border border-slate-700/60 bg-slate-950 shadow-md hover:shadow-indigo-500/20 hover:border-indigo-400/50 transition-all duration-300 aspect-[4/3]">
+            <a href="${url}" target="_blank" class="block w-full h-full">
+              <img src="${url}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" onerror="this.src='https://via.placeholder.com/300?text=Error'">
+              <div class="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-colors flex items-center justify-center opacity-0 group-hover:opacity-100">
+                <span class="bg-slate-900/90 backdrop-blur text-white text-[10px] px-2.5 py-1 rounded-lg border border-white/20 shadow">
+                  <i class="fa-solid fa-up-right-from-square mr-1"></i> ดูภาพขนาดเต็ม
+                </span>
+              </div>
             </a>
           </div>
         `;
@@ -294,7 +303,7 @@
       toggleAlbumModal(true);
     }
 
-    // ฟังก์ชันค้นหาใบหน้า (แสดงข้อความชิดอยู่ภายในการ์ดรูปภาพ ไม่กินพื้นที่ข้างนอก)
+    // ฟังก์ชันค้นหาใบหน้า
     async function searchFace(event) {
       const file = event.target.files[0];
       if (!file) return;
@@ -357,10 +366,9 @@
                     </div>
                   ` : ''}
                 </div>
-                <!-- รายละเอียดข้อความจำกัดอยู่เฉพาะใต้รูป ไม่กินพื้นที่แถบยาว -->
                 <div class="p-3 bg-slate-900/60 flex flex-col justify-between flex-1">
                   <div>
-                    <h3 class="font-medium text-xs text-slate-200 line-clamp-2 title="${title}">${title}</h3>
+                    <h3 class="font-medium text-xs text-slate-200 line-clamp-2" title="${title}">${title}</h3>
                     <p class="text-[10px] text-slate-400 mt-1"><i class="fa-regular fa-calendar-days text-[9px] mr-1"></i>${date}</p>
                   </div>
                   <div class="mt-2.5 pt-2 border-t border-slate-800 flex justify-end">
@@ -467,7 +475,7 @@
         alert("ส่งรูปภาพเรียบร้อยแล้ว!");
         toggleUploadModal(false);
         document.getElementById('ev-files').value = "";
-        setTimeout(loadAlbums, 5000); // โหลดรายการอัลบั้มใหม่
+        setTimeout(loadAlbums, 5000);
       } catch (err) {
         console.error("Upload Error:", err);
         alert("เกิดข้อผิดพลาดในการอัปโหลด: " + err.message);

@@ -1,36 +1,48 @@
 <!DOCTYPE html>
-<html lang="th">
+<html lang="th" class="dark">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ระบบค้นหาภาพกิจกรรมด้วยใบหน้า | AI Face Search</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+    }
+  </script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   
   <style>
-    body { font-family: 'Prompt', sans-serif; }
-    .glass-card {
-      background: rgba(15, 23, 42, 0.7);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
+    body { font-family: 'Prompt', sans-serif; transition: background-color 0.3s, color 0.3s; }
+    
+    /* สไตล์ Dark Mode */
+    .dark .glass-card {
+      background: rgba(15, 23, 42, 0.75);
       border: 1px solid rgba(255, 255, 255, 0.08);
     }
-    .glass-modal {
-      background: rgba(2, 6, 23, 0.88);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
+    .dark .glow-bg {
+      background: radial-gradient(circle, rgba(59, 130, 246, 0.15) 0%, rgba(99, 102, 241, 0.08) 40%, transparent 70%);
+    }
+
+    /* สไตล์ Light Mode */
+    .glass-card {
+      background: rgba(255, 255, 255, 0.85);
+      border: 1px solid rgba(226, 232, 240, 0.8);
     }
     .glow-bg {
+      background: radial-gradient(circle, rgba(199, 210, 254, 0.4) 0%, rgba(224, 231, 255, 0.2) 50%, transparent 70%);
+    }
+
+    .glow-bg-layer {
       position: absolute;
       top: 0;
       left: 50%;
       transform: translateX(-50%);
       width: 700px;
       height: 380px;
-      background: radial-gradient(circle, rgba(59, 130, 246, 0.18) 0%, rgba(99, 102, 241, 0.1) 40%, transparent 70%);
       filter: blur(70px);
       z-index: -1;
       pointer-events: none;
@@ -45,39 +57,48 @@
       50% { opacity: 1; }
       100% { transform: translateY(80px); opacity: 0; }
     }
-    /* บังคับระยะห่างรูปภาพในอัลบั้ม */
     #modal-album-photos {
       display: grid !important;
       grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)) !important;
-      column-gap: 1.25rem !important; /* 20px */
-      row-gap: 1.5rem !important;    /* 24px */
+      column-gap: 1.25rem !important;
+      row-gap: 1.5rem !important;
     }
   </style>
 </head>
-<body class="bg-gradient-to-br from-[#0b0f19] via-[#0f172a] to-[#020617] min-h-screen text-slate-100 flex flex-col antialiased selection:bg-indigo-500 selection:text-white">
+<body class="bg-slate-50 text-slate-800 dark:bg-gradient-to-br dark:from-[#0b0f19] dark:via-[#0f172a] dark:to-[#020617] dark:text-slate-100 min-h-screen flex flex-col antialiased selection:bg-indigo-500 selection:text-white">
 
-  <div class="glow-bg"></div>
+  <!-- Ambient Glow -->
+  <div class="glow-bg-layer glow-bg"></div>
 
   <!-- Navbar -->
-  <header class="w-full border-b border-slate-800 px-6 py-4 glass-card sticky top-0 z-40">
+  <header class="w-full border-b border-slate-200 dark:border-slate-800 px-6 py-4 glass-card sticky top-0 z-40 backdrop-blur-md">
     <div class="max-w-6xl mx-auto flex justify-between items-center">
       <div class="flex items-center gap-3">
-        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 to-blue-500 flex items-center justify-center shadow-lg shadow-indigo-500/20 border border-white/10">
-          <i class="fa-solid fa-camera text-base text-white"></i>
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 to-blue-500 flex items-center justify-center shadow-lg shadow-indigo-500/20 text-white">
+          <i class="fa-solid fa-camera text-base"></i>
         </div>
         <div>
-          <h1 class="text-base md:text-lg font-bold tracking-tight text-white flex items-center gap-2">
+          <h1 class="text-base md:text-lg font-bold tracking-tight text-slate-800 dark:text-white flex items-center gap-2">
             ระบบค้นหาภาพกิจกรรม
-            <span class="text-[10px] bg-indigo-500/10 text-indigo-300 border border-indigo-400/20 px-2 py-0.5 rounded-full font-normal">AI Powered</span>
+            <span class="text-[10px] bg-indigo-50 text-indigo-600 dark:bg-indigo-500/10 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-400/20 px-2 py-0.5 rounded-full font-normal">AI Powered</span>
           </h1>
-          <p class="text-xs text-slate-400">ค้นหารูปถ่ายของคุณในกิจกรรมด้วยระบบสแกนใบหน้า</p>
+          <p class="text-xs text-slate-500 dark:text-slate-400">ค้นหารูปถ่ายของคุณในกิจกรรมด้วยระบบสแกนใบหน้า</p>
         </div>
       </div>
 
-      <button onclick="toggleUploadModal(true)" class="group flex items-center gap-2 bg-indigo-600/20 hover:bg-indigo-600/30 text-indigo-200 hover:text-white border border-indigo-500/30 px-3.5 py-2 rounded-xl text-xs font-medium transition duration-200 active:scale-95 shadow-sm">
-        <i class="fa-solid fa-cloud-arrow-up text-indigo-400 group-hover:scale-110 transition-transform"></i>
-        <span>ส่งรูปภาพเข้ากิจกรรม</span>
-      </button>
+      <div class="flex items-center gap-3">
+        <!-- ปุ่มสลับ Dark / Light Mode -->
+        <button onclick="toggleTheme()" id="theme-toggle" class="p-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-white transition shadow-sm" title="สลับโหมด สว่าง / มืด">
+          <i id="theme-icon" class="fa-solid fa-sun text-sm"></i>
+        </button>
+
+        <!-- ปุ่มส่งรูปเข้ากิจกรรม -->
+        <button onclick="toggleUploadModal(true)" class="group flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white dark:bg-indigo-600/20 dark:hover:bg-indigo-600/30 dark:text-indigo-200 dark:hover:text-white border border-transparent dark:border-indigo-500/30 px-3.5 py-2 rounded-xl text-xs font-medium transition duration-200 active:scale-95 shadow-sm">
+          <i class="fa-solid fa-cloud-arrow-up text-indigo-200 dark:text-indigo-400 group-hover:scale-110 transition-transform"></i>
+          <span class="hidden sm:inline">ส่งรูปภาพเข้ากิจกรรม</span>
+          <span class="sm:hidden">ส่งรูป</span>
+        </button>
+      </div>
     </div>
   </header>
 
@@ -86,12 +107,12 @@
     
     <!-- Face Upload Area -->
     <section class="max-w-md w-full mx-auto text-center">
-      <div class="glass-card rounded-2xl p-5 shadow-2xl relative overflow-hidden transition-all duration-300 border border-slate-800 hover:border-slate-700">
+      <div class="glass-card rounded-2xl p-5 shadow-xl relative overflow-hidden transition-all duration-300 backdrop-blur-md">
         
-        <label for="search-input" class="cursor-pointer flex flex-col items-center justify-center border-2 border-dashed border-slate-700 hover:border-indigo-400/60 rounded-xl p-5 transition-all duration-300 hover:bg-slate-800/40 group relative">
+        <label for="search-input" class="cursor-pointer flex flex-col items-center justify-center border-2 border-dashed border-slate-300 dark:border-slate-700 hover:border-indigo-500 rounded-xl p-5 transition-all duration-300 hover:bg-slate-50 dark:hover:bg-slate-800/40 group relative">
           
-          <div id="preview-container" class="relative w-16 h-16 rounded-xl overflow-hidden bg-slate-900 border border-slate-700 flex items-center justify-center mb-2 shadow-inner group-hover:scale-105 transition-transform">
-            <svg id="default-icon" class="w-8 h-8 text-indigo-400 group-hover:text-indigo-300 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div id="preview-container" class="relative w-16 h-16 rounded-xl overflow-hidden bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 flex items-center justify-center mb-2 shadow-inner group-hover:scale-105 transition-transform">
+            <svg id="default-icon" class="w-8 h-8 text-indigo-500 dark:text-indigo-400 group-hover:text-indigo-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
             </svg>
@@ -99,18 +120,18 @@
             <div id="scan-bar" class="hidden absolute top-0 left-0 w-full scan-line"></div>
           </div>
 
-          <span class="text-xs font-semibold text-slate-200 group-hover:text-indigo-300 transition-colors block">กดเลือกรูปหน้าตรง หรือ ถ่ายเซลฟี่</span>
-          <span class="text-[11px] text-slate-400 block mt-0.5">ค้นหารูปของคุณทั้งหมดทันที</span>
+          <span class="text-xs font-semibold text-slate-700 dark:text-slate-200 group-hover:text-indigo-600 dark:group-hover:text-indigo-300 transition-colors block">กดเลือกรูปหน้าตรง หรือ ถ่ายเซลฟี่</span>
+          <span class="text-[11px] text-slate-500 dark:text-slate-400 block mt-0.5">ค้นหารูปของคุณทั้งหมดทันที</span>
 
           <input id="search-input" type="file" accept="image/*" class="hidden" onchange="searchFace(event)">
         </label>
 
-        <div id="search-status" class="hidden mt-3 pt-3 border-t border-slate-800 flex items-center justify-between">
-          <div class="flex items-center gap-2 text-xs text-indigo-300">
-            <i id="status-spinner" class="fa-solid fa-circle-notch fa-spin text-indigo-400"></i>
-            <span id="status-msg" class="text-slate-300">กำลังค้นหา...</span>
+        <div id="search-status" class="hidden mt-3 pt-3 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between">
+          <div class="flex items-center gap-2 text-xs text-indigo-600 dark:text-indigo-300">
+            <i id="status-spinner" class="fa-solid fa-circle-notch fa-spin text-indigo-500"></i>
+            <span id="status-msg" class="text-slate-600 dark:text-slate-300">กำลังค้นหา...</span>
           </div>
-          <button onclick="resetSearch()" class="text-[11px] text-slate-400 hover:text-white bg-slate-800 hover:bg-slate-700 px-2.5 py-1 rounded-lg border border-slate-700 transition flex items-center gap-1">
+          <button onclick="resetSearch()" class="text-[11px] text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 px-2.5 py-1 rounded-lg border border-slate-200 dark:border-slate-700 transition flex items-center gap-1">
             <i class="fa-solid fa-rotate-left"></i> ล้างค่า
           </button>
         </div>
@@ -120,15 +141,15 @@
 
     <!-- Results Section (เฉพาะรูปที่ค้นพบ) -->
     <section>
-      <div class="flex items-center justify-between border-b border-slate-800 pb-3 mb-5">
+      <div class="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3 mb-5">
         <div class="flex items-center gap-2">
-          <i class="fa-solid fa-user-check text-indigo-400"></i>
-          <h2 class="text-sm md:text-base font-semibold text-white">รูปภาพที่ค้นพบ</h2>
+          <i class="fa-solid fa-user-check text-indigo-500 dark:text-indigo-400"></i>
+          <h2 class="text-sm md:text-base font-semibold text-slate-800 dark:text-white">รูปภาพที่ค้นพบ</h2>
         </div>
-        <span id="result-badge" class="text-xs bg-slate-800/80 border border-slate-700 text-slate-400 px-3 py-0.5 rounded-full">ยังไม่มีการค้นหา</span>
+        <span id="result-badge" class="text-xs bg-slate-100 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400 px-3 py-0.5 rounded-full">ยังไม่มีการค้นหา</span>
       </div>
 
-      <div id="empty-search-state" class="text-center py-8 text-slate-500 border border-dashed border-slate-800 rounded-2xl">
+      <div id="empty-search-state" class="text-center py-8 text-slate-400 dark:text-slate-500 border border-dashed border-slate-200 dark:border-slate-800 rounded-2xl">
         <p class="text-xs">อัปโหลดภาพใบหน้าด้านบนเพื่อดูภาพที่คุณเข้าร่วมกิจกรรม</p>
       </div>
 
@@ -138,13 +159,13 @@
     </section>
 
     <!-- Albums Section (อัลบั้มกิจกรรมทั้งหมด) -->
-    <section class="pt-4 border-t border-slate-800/80">
+    <section class="pt-4 border-t border-slate-200 dark:border-slate-800/80">
       <div class="flex items-center justify-between pb-3 mb-5">
         <div class="flex items-center gap-2">
-          <i class="fa-solid fa-folder-open text-blue-400"></i>
-          <h2 class="text-sm md:text-base font-semibold text-white">อัลบั้มกิจกรรมทั้งหมด</h2>
+          <i class="fa-solid fa-folder-open text-blue-500 dark:text-blue-400"></i>
+          <h2 class="text-sm md:text-base font-semibold text-slate-800 dark:text-white">อัลบั้มกิจกรรมทั้งหมด</h2>
         </div>
-        <span id="album-count" class="text-xs text-slate-400">กำลังโหลดอัลบั้ม...</span>
+        <span id="album-count" class="text-xs text-slate-500 dark:text-slate-400">กำลังโหลดอัลบั้ม...</span>
       </div>
 
       <div id="albums-grid" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
@@ -155,64 +176,63 @@
   </main>
 
   <!-- Modal สำหรับเปิดดูรูปทั้งหมดในอัลบั้ม -->
-  <div id="album-view-modal" class="hidden fixed inset-0 glass-modal flex items-center justify-center p-4 z-50">
-    <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-4xl w-full max-h-[88vh] flex flex-col p-5 md:p-6 shadow-2xl relative">
+  <div id="album-view-modal" class="hidden fixed inset-0 bg-black/60 dark:bg-black/80 backdrop-blur-md flex items-center justify-center p-4 z-50">
+    <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl max-w-4xl w-full max-h-[88vh] flex flex-col p-5 md:p-6 shadow-2xl relative">
       
-      <div class="flex justify-between items-center pb-3 border-b border-slate-800">
+      <div class="flex justify-between items-center pb-3 border-b border-slate-200 dark:border-slate-800">
         <div>
-          <h3 id="modal-album-title" class="font-bold text-sm md:text-base text-white">ชื่อกิจกรรม</h3>
-          <p id="modal-album-date" class="text-xs text-slate-400 mt-0.5"></p>
+          <h3 id="modal-album-title" class="font-bold text-sm md:text-base text-slate-800 dark:text-white">ชื่อกิจกรรม</h3>
+          <p id="modal-album-date" class="text-xs text-slate-500 dark:text-slate-400 mt-0.5"></p>
         </div>
-        <button type="button" onclick="toggleAlbumModal(false)" class="text-slate-400 hover:text-white text-lg p-1.5 rounded-lg hover:bg-slate-800 transition">
+        <button type="button" onclick="toggleAlbumModal(false)" class="text-slate-400 hover:text-slate-600 dark:hover:text-white text-lg p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition">
           <i class="fa-solid fa-xmark"></i>
         </button>
       </div>
 
-      <!-- กล่องตารางรูปภาพในอัลบั้ม -->
       <div id="modal-album-photos" class="overflow-y-auto my-4 p-2 pr-3 max-h-[65vh]">
         <!-- รูปภาพจะถูกสร้างขึ้นมาในนี้ -->
       </div>
 
-      <div class="pt-3 border-t border-slate-800 flex justify-end">
-        <button type="button" onclick="toggleAlbumModal(false)" class="px-5 py-2 bg-slate-800 hover:bg-slate-700 text-xs font-medium text-slate-200 rounded-xl transition active:scale-95">ปิด</button>
+      <div class="pt-3 border-t border-slate-200 dark:border-slate-800 flex justify-end">
+        <button type="button" onclick="toggleAlbumModal(false)" class="px-5 py-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-xs font-medium text-slate-700 dark:text-slate-200 rounded-xl transition active:scale-95">ปิด</button>
       </div>
     </div>
   </div>
 
   <!-- Modal อัปโหลดรูป -->
-  <div id="upload-modal" class="hidden fixed inset-0 glass-modal flex items-center justify-center p-4 z-50">
-    <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-md w-full p-6 shadow-2xl text-slate-100 relative">
-      <div class="flex justify-between items-center mb-5 pb-3 border-b border-slate-800">
+  <div id="upload-modal" class="hidden fixed inset-0 bg-black/60 dark:bg-black/80 backdrop-blur-md flex items-center justify-center p-4 z-50">
+    <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl max-w-md w-full p-6 shadow-2xl text-slate-800 dark:text-slate-100 relative">
+      <div class="flex justify-between items-center mb-5 pb-3 border-b border-slate-200 dark:border-slate-800">
         <div class="flex items-center gap-2.5">
-          <div class="w-8 h-8 rounded-lg bg-indigo-500/10 border border-indigo-400/20 flex items-center justify-center text-indigo-400">
+          <div class="w-8 h-8 rounded-lg bg-indigo-50 dark:bg-indigo-500/10 border border-indigo-200 dark:border-indigo-400/20 flex items-center justify-center text-indigo-600 dark:text-indigo-400">
             <i class="fa-solid fa-cloud-arrow-up text-sm"></i>
           </div>
-          <h3 class="font-bold text-sm md:text-base text-white">ส่งภาพเข้าร่วมกิจกรรม</h3>
+          <h3 class="font-bold text-sm md:text-base text-slate-800 dark:text-white">ส่งภาพเข้าร่วมกิจกรรม</h3>
         </div>
-        <button type="button" onclick="toggleUploadModal(false)" class="text-slate-400 hover:text-white text-base">
+        <button type="button" onclick="toggleUploadModal(false)" class="text-slate-400 hover:text-slate-600 dark:hover:text-white text-base">
           <i class="fa-solid fa-xmark"></i>
         </button>
       </div>
 
       <form onsubmit="event.preventDefault(); uploadPhotos();" class="space-y-4 text-xs">
         <div>
-          <label class="block text-slate-300 mb-1.5 font-medium">ชื่อกิจกรรม</label>
-          <input type="text" id="ev-title" value="กิจกรรมสัมพันธ์" required class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 transition">
+          <label class="block text-slate-600 dark:text-slate-300 mb-1.5 font-medium">ชื่อกิจกรรม</label>
+          <input type="text" id="ev-title" value="กิจกรรมสัมพันธ์" required class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl p-2.5 text-slate-800 dark:text-white placeholder-slate-400 focus:outline-none focus:border-indigo-500 transition">
         </div>
         <div>
-          <label class="block text-slate-300 mb-1.5 font-medium">วันที่จัดกิจกรรม</label>
-          <input type="date" id="ev-date" required class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-white focus:outline-none focus:border-indigo-500 transition">
+          <label class="block text-slate-600 dark:text-slate-300 mb-1.5 font-medium">วันที่จัดกิจกรรม</label>
+          <input type="date" id="ev-date" required class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl p-2.5 text-slate-800 dark:text-white focus:outline-none focus:border-indigo-500 transition">
         </div>
         <div>
-          <label class="block text-slate-300 mb-1.5 font-medium">เลือกรูปภาพกิจกรรม</label>
-          <input type="file" id="ev-files" accept="image/*" multiple required class="w-full file:mr-3 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-indigo-600/20 file:text-indigo-300 hover:file:bg-indigo-600/30 text-slate-400 border border-slate-800 rounded-xl p-1.5 bg-slate-950 focus:outline-none">
+          <label class="block text-slate-600 dark:text-slate-300 mb-1.5 font-medium">เลือกรูปภาพกิจกรรม</label>
+          <input type="file" id="ev-files" accept="image/*" multiple required class="w-full file:mr-3 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-indigo-50 dark:file:bg-indigo-600/20 file:text-indigo-600 dark:file:text-indigo-300 hover:file:bg-indigo-100 dark:hover:file:bg-indigo-600/30 text-slate-500 border border-slate-200 dark:border-slate-800 rounded-xl p-1.5 bg-slate-50 dark:bg-slate-950 focus:outline-none">
         </div>
-        <div id="modal-msg" class="hidden p-3 rounded-xl bg-indigo-500/10 border border-indigo-500/20 text-indigo-300 flex items-center gap-2">
-          <i class="fa-solid fa-circle-notch fa-spin text-indigo-400"></i>
+        <div id="modal-msg" class="hidden p-3 rounded-xl bg-indigo-50 dark:bg-indigo-500/10 border border-indigo-200 dark:border-indigo-500/20 text-indigo-600 dark:text-indigo-300 flex items-center gap-2">
+          <i class="fa-solid fa-circle-notch fa-spin text-indigo-500"></i>
           <span id="modal-msg-text">กำลังอัปโหลด...</span>
         </div>
         <div class="flex justify-end gap-2.5 pt-3">
-          <button type="button" onclick="toggleUploadModal(false)" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl transition">ยกเลิก</button>
+          <button type="button" onclick="toggleUploadModal(false)" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 rounded-xl transition">ยกเลิก</button>
           <button type="submit" id="btn-upload" class="px-5 py-2 bg-indigo-600 hover:bg-indigo-500 text-white font-medium rounded-xl shadow-lg shadow-indigo-600/20 transition active:scale-95">ส่งรูปภาพ</button>
         </div>
       </form>
@@ -227,7 +247,36 @@
     let loadedAlbums = [];
     document.getElementById('ev-date').valueAsDate = new Date();
 
-    window.addEventListener('DOMContentLoaded', loadAlbums);
+    // ================= ระบบสลับ Dark / Light Mode =================
+    function initTheme() {
+      const savedTheme = localStorage.getItem('theme');
+      const isDark = savedTheme ? savedTheme === 'dark' : window.matchMedia('(prefers-color-scheme: dark)').matches;
+      applyTheme(isDark);
+    }
+
+    function toggleTheme() {
+      const isDark = document.documentElement.classList.contains('dark');
+      applyTheme(!isDark);
+    }
+
+    function applyTheme(isDark) {
+      const themeIcon = document.getElementById('theme-icon');
+      if (isDark) {
+        document.documentElement.classList.add('dark');
+        themeIcon.className = "fa-solid fa-sun text-sm text-amber-400";
+        localStorage.setItem('theme', 'dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+        themeIcon.className = "fa-solid fa-moon text-sm text-slate-600";
+        localStorage.setItem('theme', 'light');
+      }
+    }
+
+    // เริ่มต้นธีมและโหลดอัลบั้ม
+    window.addEventListener('DOMContentLoaded', () => {
+      initTheme();
+      loadAlbums();
+    });
 
     function toggleUploadModal(show) {
       document.getElementById('upload-modal').classList.toggle('hidden', !show);
@@ -251,25 +300,25 @@
         albumCount.innerText = `ทั้งหมด ${loadedAlbums.length} กิจกรรม`;
 
         if (loadedAlbums.length === 0) {
-          albumsGrid.innerHTML = `<p class="col-span-full text-center text-xs text-slate-500 py-6">ยังไม่มีอัลบั้มกิจกรรมในระบบ</p>`;
+          albumsGrid.innerHTML = `<p class="col-span-full text-center text-xs text-slate-400 py-6">ยังไม่มีอัลบั้มกิจกรรมในระบบ</p>`;
           return;
         }
 
         loadedAlbums.forEach((album, idx) => {
           albumsGrid.innerHTML += `
-            <div onclick="openAlbumView(${idx})" class="group cursor-pointer glass-card rounded-xl overflow-hidden border border-slate-800 hover:border-indigo-500/40 transition-all duration-300 flex flex-col justify-between">
-              <div class="relative overflow-hidden aspect-[4/3] bg-slate-950">
+            <div onclick="openAlbumView(${idx})" class="group cursor-pointer glass-card rounded-xl overflow-hidden border border-slate-200 dark:border-slate-800 hover:border-indigo-500/50 transition-all duration-300 flex flex-col justify-between shadow-sm hover:shadow-md">
+              <div class="relative overflow-hidden aspect-[4/3] bg-slate-100 dark:bg-slate-950">
                 <img src="${album.cover_url}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" onerror="this.src='https://via.placeholder.com/300?text=Album'">
-                <div class="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent"></div>
+                <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent"></div>
                 <div class="absolute bottom-2 left-2 right-2 flex justify-between items-end">
-                  <span class="text-[10px] bg-slate-900/80 border border-slate-700/80 text-indigo-300 px-2 py-0.5 rounded-md flex items-center gap-1">
+                  <span class="text-[10px] bg-black/60 backdrop-blur border border-white/20 text-white px-2 py-0.5 rounded-md flex items-center gap-1">
                     <i class="fa-regular fa-images text-[9px]"></i> ${album.total_photos} รูป
                   </span>
                 </div>
               </div>
-              <div class="p-3 bg-slate-900/60">
-                <h4 class="font-medium text-xs text-white truncate group-hover:text-indigo-300 transition-colors">${album.title}</h4>
-                <p class="text-[10px] text-slate-400 mt-0.5"><i class="fa-regular fa-calendar-days text-[9px] mr-1"></i>${album.date || 'ไม่ระบุวันที่'}</p>
+              <div class="p-3 bg-white dark:bg-slate-900/60">
+                <h4 class="font-medium text-xs text-slate-800 dark:text-white truncate group-hover:text-indigo-600 dark:group-hover:text-indigo-300 transition-colors">${album.title}</h4>
+                <p class="text-[10px] text-slate-500 dark:text-slate-400 mt-0.5"><i class="fa-regular fa-calendar-days text-[9px] mr-1"></i>${album.date || 'ไม่ระบุวันที่'}</p>
               </div>
             </div>
           `;
@@ -280,7 +329,6 @@
       }
     }
 
-    // ฟังก์ชันเปิดดูรูปในอัลบั้ม พร้อมเว้นระยะห่าง row-gap & column-gap เด็ดขาด
     function openAlbumView(index) {
       const album = loadedAlbums[index];
       if (!album) return;
@@ -293,11 +341,11 @@
       
       album.photos.forEach(url => {
         photosBox.innerHTML += `
-          <div class="group relative rounded-xl overflow-hidden border border-slate-700/80 bg-slate-950 shadow-lg hover:border-indigo-400 transition-all duration-300 aspect-[4/3]">
+          <div class="group relative rounded-xl overflow-hidden border border-slate-200 dark:border-slate-700/80 bg-slate-100 dark:bg-slate-950 shadow-md hover:border-indigo-500 transition-all duration-300 aspect-[4/3]">
             <a href="${url}" target="_blank" class="block w-full h-full">
               <img src="${url}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" onerror="this.src='https://via.placeholder.com/300?text=Error'">
               <div class="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-colors flex items-center justify-center opacity-0 group-hover:opacity-100">
-                <span class="bg-slate-900/90 backdrop-blur text-white text-[11px] px-3 py-1.5 rounded-lg border border-white/20 shadow">
+                <span class="bg-black/80 backdrop-blur text-white text-[11px] px-3 py-1.5 rounded-lg border border-white/20 shadow">
                   <i class="fa-solid fa-up-right-from-square mr-1"></i> ดูภาพขนาดเต็ม
                 </span>
               </div>
@@ -309,7 +357,6 @@
       toggleAlbumModal(true);
     }
 
-    // ฟังก์ชันค้นหาใบหน้า
     async function searchFace(event) {
       const file = event.target.files[0];
       if (!file) return;
@@ -353,7 +400,7 @@
           emptyState.classList.add('hidden');
           statusMsg.innerText = "ค้นหาเสร็จสิ้น";
           badge.innerText = `พบภาพที่ตรงกัน ${data.results.length} รูป`;
-          badge.className = "text-xs bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 px-3 py-0.5 rounded-full font-medium";
+          badge.className = "text-xs bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-200 dark:border-emerald-500/30 text-emerald-600 dark:text-emerald-400 px-3 py-0.5 rounded-full font-medium";
 
           data.results.forEach(item => {
             const imgUrl = item.photo_url || item.image_url || item.url || "";
@@ -362,23 +409,23 @@
             const scorePct = item.score ? (item.score * 100).toFixed(1) : null;
 
             grid.innerHTML += `
-              <div class="group glass-card rounded-xl overflow-hidden border border-slate-800 hover:border-slate-700 transition-all duration-300 flex flex-col justify-between">
-                <div class="relative overflow-hidden aspect-[4/3] bg-slate-950">
+              <div class="group glass-card rounded-xl overflow-hidden border border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 transition-all duration-300 flex flex-col justify-between shadow-sm">
+                <div class="relative overflow-hidden aspect-[4/3] bg-slate-100 dark:bg-slate-950">
                   <img src="${imgUrl}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" onerror="this.src='https://via.placeholder.com/300?text=Error'">
                   ${scorePct ? `
-                    <div class="absolute top-2 right-2 bg-slate-950/80 backdrop-blur-md border border-emerald-500/40 text-emerald-400 text-[10px] font-semibold px-2 py-0.5 rounded-full flex items-center gap-1 shadow">
+                    <div class="absolute top-2 right-2 bg-black/70 backdrop-blur-md border border-emerald-400/40 text-emerald-300 text-[10px] font-semibold px-2 py-0.5 rounded-full flex items-center gap-1 shadow">
                       <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
                       ${scorePct}%
                     </div>
                   ` : ''}
                 </div>
-                <div class="p-3 bg-slate-900/60 flex flex-col justify-between flex-1">
+                <div class="p-3 bg-white dark:bg-slate-900/60 flex flex-col justify-between flex-1">
                   <div>
-                    <h3 class="font-medium text-xs text-slate-200 line-clamp-2" title="${title}">${title}</h3>
-                    <p class="text-[10px] text-slate-400 mt-1"><i class="fa-regular fa-calendar-days text-[9px] mr-1"></i>${date}</p>
+                    <h3 class="font-medium text-xs text-slate-800 dark:text-slate-200 line-clamp-2" title="${title}">${title}</h3>
+                    <p class="text-[10px] text-slate-500 dark:text-slate-400 mt-1"><i class="fa-regular fa-calendar-days text-[9px] mr-1"></i>${date}</p>
                   </div>
-                  <div class="mt-2.5 pt-2 border-t border-slate-800 flex justify-end">
-                    <a href="${imgUrl}" target="_blank" class="text-[10px] bg-slate-800 hover:bg-indigo-600 text-slate-300 hover:text-white px-2 py-1 rounded-md flex items-center gap-1 transition">
+                  <div class="mt-2.5 pt-2 border-t border-slate-100 dark:border-slate-800 flex justify-end">
+                    <a href="${imgUrl}" target="_blank" class="text-[10px] bg-slate-100 hover:bg-indigo-600 dark:bg-slate-800 dark:hover:bg-indigo-600 text-slate-700 hover:text-white dark:text-slate-300 dark:hover:text-white px-2 py-1 rounded-md flex items-center gap-1 transition">
                       <i class="fa-solid fa-arrow-up-right-from-square text-[9px]"></i> เปิดภาพเต็ม
                     </a>
                   </div>
@@ -390,7 +437,7 @@
           emptyState.classList.remove('hidden');
           emptyState.querySelector('p').innerText = "ไม่พบรูปภาพของคุณในกิจกรรมนี้";
           badge.innerText = `พบ 0 รูป`;
-          badge.className = "text-xs bg-rose-500/10 border border-rose-500/30 text-rose-400 px-3 py-0.5 rounded-full font-medium";
+          badge.className = "text-xs bg-rose-50 dark:bg-rose-500/10 border border-rose-200 dark:border-rose-500/30 text-rose-600 dark:text-rose-400 px-3 py-0.5 rounded-full font-medium";
           statusMsg.innerText = "ไม่พบบุคคลที่ตรงกัน";
         }
       } catch (err) {
@@ -410,7 +457,7 @@
       document.getElementById('empty-search-state').classList.remove('hidden');
       document.getElementById('empty-search-state').querySelector('p').innerText = "อัปโหลดภาพใบหน้าด้านบนเพื่อดูภาพที่คุณเข้าร่วมกิจกรรม";
       document.getElementById('result-badge').innerText = "ยังไม่มีการค้นหา";
-      document.getElementById('result-badge').className = "text-xs bg-slate-800/80 border border-slate-700 text-slate-400 px-3 py-0.5 rounded-full";
+      document.getElementById('result-badge').className = "text-xs bg-slate-100 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400 px-3 py-0.5 rounded-full";
       
       document.getElementById('selfie-preview').classList.add('hidden');
       document.getElementById('default-icon').classList.remove('hidden');

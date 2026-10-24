@@ -107,7 +107,6 @@
         if (data.results && data.results.length > 0) {
           statusMsg.innerText = `พบรูปภาพของคุณทั้งหมด ${data.results.length} รูป`;
           data.results.forEach(item => {
-            // รองรับทั้งชื่อ photo_url, image_url หรือ url จาก Qdrant Payload
             const imgUrl = item.photo_url || item.image_url || item.url || "";
             const title = item.event_title || item.title || "รูปกิจกรรม";
             const date = item.event_date || item.date || "";
@@ -139,7 +138,33 @@
       document.getElementById('photo-grid').innerHTML = "";
     }
 
-    // ฟังก์ชันส่งรูปเข้า Google Apps Script (แก้ไขไม่ให้ติด CORS)
+    // ฟังก์ชันย่อขนาดภาพก่อนแปลง Base64 เพื่อป้องกันคำขอขนาดใหญ่เกินพิกัด
+    function resizeImage(file, maxWidth = 1200) {
+      return new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          const img = new Image();
+          img.onload = () => {
+            const canvas = document.createElement('canvas');
+            let w = img.width;
+            let h = img.height;
+            if (w > maxWidth) {
+              h = Math.round((h * maxWidth) / w);
+              w = maxWidth;
+            }
+            canvas.width = w;
+            canvas.height = h;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, w, h);
+            resolve(canvas.toDataURL('image/jpeg', 0.85).split(',')[1]);
+          };
+          img.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+      });
+    }
+
+    // ฟังก์ชันส่งรูปเข้า Google Apps Script
     async function uploadPhotos() {
       const files = document.getElementById('ev-files').files;
       const title = document.getElementById('ev-title').value;
@@ -155,24 +180,19 @@
       try {
         for (let i = 0; i < files.length; i++) {
           const file = files[i];
-          msg.innerText = `กำลังส่งรูปที่ ${i + 1}/${files.length}...`;
+          msg.innerText = `กำลังประมวลผลรูปที่ ${i + 1}/${files.length}...`;
 
-          const base64Data = await new Promise(resolve => {
-            const reader = new FileReader();
-            reader.onload = () => resolve(reader.result.split(',')[1]); // ตัด header base64 data: ออก
-            reader.readAsDataURL(file);
-          });
+          const base64Data = await resizeImage(file, 1200);
 
           const payload = {
             folderId: FOLDER_ID,
             fileName: file.name,
-            mimeType: file.type,
+            mimeType: "image/jpeg",
             base64Data: base64Data,
             eventTitle: title,
             eventDate: date
           };
 
-          // ใช้ mode: 'no-cors' เพื่อให้ส่งข้อมูลเข้า GAS ได้อย่างราบรื่นโดยไม่โดนเบราว์เซอร์บล็อก
           await fetch(GAS_URL, {
             method: "POST",
             mode: "no-cors",
@@ -181,7 +201,7 @@
           });
         }
 
-        alert("ส่งรูปภาพเข้าสู่ระบบเรียบร้อยแล้ว รอระบบประมวลผลประมาณ 10-20 วินาที");
+        alert("ส่งรูปภาพเข้าสู่ระบบเรียบร้อยแล้ว รอระบบประมวลผลประมาณ 15-20 วินาที");
         toggleModal(false);
         document.getElementById('ev-files').value = "";
       } catch (err) {

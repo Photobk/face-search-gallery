@@ -158,14 +158,42 @@
       </div>
     </section>
 
-    <!-- Albums Section (อัลบั้มกิจกรรมทั้งหมด) -->
+    <!-- Albums Section (อัลบั้มกิจกรรมทั้งหมด พร้อมช่องค้นหากิจกรรมแบบ Fuzzy Search) -->
     <section class="pt-4 border-t border-slate-200 dark:border-slate-800/80">
-      <div class="flex items-center justify-between pb-3 mb-5">
-        <div class="flex items-center gap-2">
-          <i class="fa-solid fa-folder-open text-blue-500 dark:text-blue-400"></i>
-          <h2 class="text-sm md:text-base font-semibold text-slate-800 dark:text-white">อัลบั้มกิจกรรมทั้งหมด</h2>
+      
+      <!-- ส่วนหัวของอัลบั้ม พร้อมช่องค้นหากิจกรรม -->
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 mb-5 border-b border-slate-200/60 dark:border-slate-800/60">
+        <div class="flex items-center gap-2.5">
+          <div class="w-8 h-8 rounded-lg bg-blue-50 dark:bg-blue-500/10 border border-blue-200 dark:border-blue-400/20 flex items-center justify-center text-blue-600 dark:text-blue-400">
+            <i class="fa-solid fa-folder-open text-sm"></i>
+          </div>
+          <div>
+            <h2 class="text-sm md:text-base font-semibold text-slate-800 dark:text-white">อัลบั้มกิจกรรมทั้งหมด</h2>
+            <p id="album-count" class="text-[11px] text-slate-500 dark:text-slate-400">กำลังโหลดอัลบั้ม...</p>
+          </div>
         </div>
-        <span id="album-count" class="text-xs text-slate-500 dark:text-slate-400">กำลังโหลดอัลบั้ม...</span>
+
+        <!-- กล่อง Input ค้นหากิจกรรม -->
+        <div class="relative w-full sm:w-72">
+          <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-slate-400 dark:text-slate-500">
+            <i class="fa-solid fa-magnifying-glass text-xs"></i>
+          </span>
+          <input 
+            type="text" 
+            id="album-search-input" 
+            oninput="filterAlbums()" 
+            placeholder="ค้นหาชื่อกิจกรรม หรือ วันที่ (คำใกล้เคียงได้)..." 
+            class="w-full pl-8 pr-8 py-2 text-xs rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition shadow-sm"
+          >
+          <button 
+            type="button" 
+            id="clear-album-search" 
+            onclick="clearAlbumSearch()" 
+            class="hidden absolute inset-y-0 right-0 flex items-center pr-2.5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition text-xs"
+          >
+            <i class="fa-solid fa-circle-xmark"></i>
+          </button>
+        </div>
       </div>
 
       <div id="albums-grid" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
@@ -272,7 +300,6 @@
       }
     }
 
-    // เริ่มต้นธีมและโหลดอัลบั้ม
     window.addEventListener('DOMContentLoaded', () => {
       initTheme();
       loadAlbums();
@@ -286,8 +313,8 @@
       document.getElementById('album-view-modal').classList.toggle('hidden', !show);
     }
 
+    // ฟังก์ชันดึงอัลบั้มกิจกรรมมาแสดง
     async function loadAlbums() {
-      const albumsGrid = document.getElementById('albums-grid');
       const albumCount = document.getElementById('album-count');
       
       try {
@@ -296,37 +323,156 @@
         
         const data = await res.json();
         loadedAlbums = data.albums || [];
-        albumsGrid.innerHTML = "";
-        albumCount.innerText = `ทั้งหมด ${loadedAlbums.length} กิจกรรม`;
-
-        if (loadedAlbums.length === 0) {
-          albumsGrid.innerHTML = `<p class="col-span-full text-center text-xs text-slate-400 py-6">ยังไม่มีอัลบั้มกิจกรรมในระบบ</p>`;
-          return;
-        }
-
-        loadedAlbums.forEach((album, idx) => {
-          albumsGrid.innerHTML += `
-            <div onclick="openAlbumView(${idx})" class="group cursor-pointer glass-card rounded-xl overflow-hidden border border-slate-200 dark:border-slate-800 hover:border-indigo-500/50 transition-all duration-300 flex flex-col justify-between shadow-sm hover:shadow-md">
-              <div class="relative overflow-hidden aspect-[4/3] bg-slate-100 dark:bg-slate-950">
-                <img src="${album.cover_url}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" onerror="this.src='https://via.placeholder.com/300?text=Album'">
-                <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent"></div>
-                <div class="absolute bottom-2 left-2 right-2 flex justify-between items-end">
-                  <span class="text-[10px] bg-black/60 backdrop-blur border border-white/20 text-white px-2 py-0.5 rounded-md flex items-center gap-1">
-                    <i class="fa-regular fa-images text-[9px]"></i> ${album.total_photos} รูป
-                  </span>
-                </div>
-              </div>
-              <div class="p-3 bg-white dark:bg-slate-900/60">
-                <h4 class="font-medium text-xs text-slate-800 dark:text-white truncate group-hover:text-indigo-600 dark:group-hover:text-indigo-300 transition-colors">${album.title}</h4>
-                <p class="text-[10px] text-slate-500 dark:text-slate-400 mt-0.5"><i class="fa-regular fa-calendar-days text-[9px] mr-1"></i>${album.date || 'ไม่ระบุวันที่'}</p>
-              </div>
-            </div>
-          `;
-        });
+        renderAlbums(loadedAlbums);
       } catch (err) {
         console.error("Error loading albums:", err);
         albumCount.innerText = "ไม่สามารถโหลดอัลบั้มได้";
       }
+    }
+
+    // ฟังก์ชันวาดการ์ดอัลบั้ม
+    function renderAlbums(albumsToRender) {
+      const albumsGrid = document.getElementById('albums-grid');
+      const albumCount = document.getElementById('album-count');
+      
+      albumsGrid.innerHTML = "";
+      albumCount.innerText = `แสดง ${albumsToRender.length} จากทั้งหมด ${loadedAlbums.length} กิจกรรม`;
+
+      if (albumsToRender.length === 0) {
+        albumsGrid.innerHTML = `
+          <div class="col-span-full text-center py-10 text-slate-400">
+            <i class="fa-regular fa-folder-open text-3xl mb-2 text-slate-300 dark:text-slate-600"></i>
+            <p class="text-xs">ไม่พบอัลบั้มกิจกรรมที่ใกล้เคียงกับคำค้นหา</p>
+          </div>
+        `;
+        return;
+      }
+
+      albumsToRender.forEach((album) => {
+        const originalIndex = loadedAlbums.findIndex(a => a.title === album.title && a.date === album.date);
+
+        albumsGrid.innerHTML += `
+          <div onclick="openAlbumView(${originalIndex})" class="group cursor-pointer glass-card rounded-xl overflow-hidden border border-slate-200 dark:border-slate-800 hover:border-indigo-500/50 transition-all duration-300 flex flex-col justify-between shadow-sm hover:shadow-md">
+            <div class="relative overflow-hidden aspect-[4/3] bg-slate-100 dark:bg-slate-950">
+              <img src="${album.cover_url}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" onerror="this.src='https://via.placeholder.com/300?text=Album'">
+              <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent"></div>
+              <div class="absolute bottom-2 left-2 right-2 flex justify-between items-end">
+                <span class="text-[10px] bg-black/60 backdrop-blur border border-white/20 text-white px-2 py-0.5 rounded-md flex items-center gap-1">
+                  <i class="fa-regular fa-images text-[9px]"></i> ${album.total_photos} รูป
+                </span>
+              </div>
+            </div>
+            <div class="p-3 bg-white dark:bg-slate-900/60">
+              <h4 class="font-medium text-xs text-slate-800 dark:text-white truncate group-hover:text-indigo-600 dark:group-hover:text-indigo-300 transition-colors">${album.title}</h4>
+              <p class="text-[10px] text-slate-500 dark:text-slate-400 mt-0.5"><i class="fa-regular fa-calendar-days text-[9px] mr-1"></i>${album.date || 'ไม่ระบุวันที่'}</p>
+            </div>
+          </div>
+        `;
+      });
+    }
+
+    // ================= อัลกอริทึมค้นหาคำใกล้เคียง (Fuzzy & Flexible Search) =================
+    // 1. ตรวจสอบการเป็นลำดับตัวอักษร (Subsequence match)
+    function isSubsequence(pattern, str) {
+      let pIdx = 0, sIdx = 0;
+      while (pIdx < pattern.length && sIdx < str.length) {
+        if (pattern[pIdx] === str[sIdx]) pIdx++;
+        sIdx++;
+      }
+      return pIdx === pattern.length;
+    }
+
+    // 2. คำนวณความคล้ายคลึงของข้อความ (Levenshtein Distance Similarity)
+    function getSimilarity(s1, s2) {
+      if (!s1 || !s2) return 0;
+      const longer = s1.length > s2.length ? s1 : s2;
+      const shorter = s1.length > s2.length ? s2 : s1;
+      if (longer.length === 0) return 1.0;
+
+      const costs = [];
+      for (let i = 0; i <= longer.length; i++) {
+        let lastValue = i;
+        for (let j = 0; j <= shorter.length; j++) {
+          if (i === 0) {
+            costs[j] = j;
+          } else if (j > 0) {
+            let newValue = costs[j - 1];
+            if (longer.charAt(i - 1) !== shorter.charAt(j - 1)) {
+              newValue = Math.min(Math.min(newValue, lastValue), costs[j]) + 1;
+            }
+            costs[j - 1] = lastValue;
+            lastValue = newValue;
+          }
+        }
+        if (i > 0) costs[shorter.length] = lastValue;
+      }
+      return (longer.length - costs[shorter.length]) / longer.length;
+    }
+
+    // 3. ฟังก์ชันหลักสำหรับตรวจสอบคำใกล้เคียง
+    function matchesFuzzy(text, query) {
+      if (!query) return true;
+      if (!text) return false;
+
+      text = text.toLowerCase().trim();
+      query = query.toLowerCase().trim();
+
+      // มีคำนั้นอยู่ตรงๆ หรือไม่
+      if (text.includes(query)) return true;
+
+      // แยกคำค้นหาออกเป็นชิ้นๆ (Multi-term matching) เช่น "ประชุม บึงกาฬ"
+      const terms = query.split(/\s+/).filter(t => t.length > 0);
+      const allTermsFound = terms.every(term => text.includes(term) || isSubsequence(term, text));
+      if (allTermsFound) return true;
+
+      // ตรวจสอบลำดับอักษรย่อ / พิมพ์ตกบางตัว
+      if (query.length >= 3 && isSubsequence(query, text)) return true;
+
+      // ตัดคำในข้อความมาเปรียบเทียบคะแนนความคล้ายคลึง (รับมือการพิมพ์สระหรือพยัญชนะผิด 1-2 ตัว)
+      const words = text.split(/[\s,./\-_()]+/).filter(w => w.length > 0);
+      for (const word of words) {
+        if (getSimilarity(word, query) >= 0.55) return true;
+        // กรณีค้นหาด้วยคำสั้น
+        if (query.length >= 3 && word.length >= 3) {
+          if (word.startsWith(query.substring(0, 3))) return true;
+        }
+      }
+
+      return false;
+    }
+
+    // ฟังก์ชันค้นหากรองอัลบั้ม
+    function filterAlbums() {
+      const query = document.getElementById('album-search-input').value.trim();
+      const clearBtn = document.getElementById('clear-album-search');
+
+      if (query.length > 0) {
+        clearBtn.classList.remove('hidden');
+      } else {
+        clearBtn.classList.add('hidden');
+      }
+
+      if (!query) {
+        renderAlbums(loadedAlbums);
+        return;
+      }
+
+      // กรองผ่าน matchesFuzzy ทั้งชื่อกิจกรรมและวันที่
+      const filtered = loadedAlbums.filter(album => {
+        const titleMatch = matchesFuzzy(album.title || '', query);
+        const dateMatch = matchesFuzzy(album.date || '', query);
+        return titleMatch || dateMatch;
+      });
+
+      renderAlbums(filtered);
+    }
+
+    function clearAlbumSearch() {
+      const input = document.getElementById('album-search-input');
+      input.value = "";
+      document.getElementById('clear-album-search').classList.add('hidden');
+      renderAlbums(loadedAlbums);
+      input.focus();
     }
 
     function openAlbumView(index) {

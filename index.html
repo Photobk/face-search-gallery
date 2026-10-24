@@ -8,6 +8,7 @@
   <link rel="icon" type="image/png" sizes="16x16" href="https://cdn.jsdelivr.net/gh/Photobk/face-search-gallery@main/favicon.png">
   <link rel="apple-touch-icon" sizes="180x180" href="https://cdn.jsdelivr.net/gh/Photobk/face-search-gallery@main/favicon.png">
   <link rel="shortcut icon" href="https://cdn.jsdelivr.net/gh/Photobk/face-search-gallery@main/favicon.png">
+
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
@@ -23,7 +24,7 @@
     body { 
       font-family: 'Prompt', sans-serif; 
       transition: background-color 0.3s, color 0.3s;
-      overflow-x: hidden; /* ป้องกันหน้าจอมือถือเลื่อนล้นแนวนอน */
+      overflow-x: hidden;
     }
     
     .dark .glass-card {
@@ -31,26 +32,27 @@
       border: 1px solid rgba(255, 255, 255, 0.08);
     }
     .dark .glow-bg {
-      background: radial-gradient(circle, rgba(59, 130, 246, 0.15) 0%, rgba(99, 102, 241, 0.08) 40%, transparent 70%);
+      background: radial-gradient(circle at 50% 40%, rgba(59, 130, 246, 0.22) 0%, rgba(99, 102, 241, 0.12) 45%, transparent 75%);
     }
 
+    /* Light Mode: แสงฟุ้งสีน้ำเงินอ่อนตรงกลาง ไล่จางเข้าสู่สีขาว */
     .glass-card {
-      background: rgba(255, 255, 255, 0.9);
+      background: rgba(255, 255, 255, 0.92);
       border: 1px solid rgba(226, 232, 240, 0.9);
     }
     .glow-bg {
-      background: radial-gradient(circle, rgba(199, 210, 254, 0.4) 0%, rgba(224, 231, 255, 0.2) 50%, transparent 70%);
+      background: radial-gradient(circle at 50% 35%, rgba(147, 197, 253, 0.6) 0%, rgba(191, 219, 254, 0.35) 45%, rgba(255, 255, 255, 0) 75%);
     }
 
     .glow-bg-layer {
       position: absolute;
-      top: 0;
+      top: 40px;
       left: 50%;
       transform: translateX(-50%);
       width: 100%;
-      max-width: 600px;
-      height: 350px;
-      filter: blur(70px);
+      max-width: 950px;
+      height: 520px;
+      filter: blur(60px);
       z-index: -1;
       pointer-events: none;
     }
@@ -99,16 +101,15 @@
     }
   </style>
 </head>
-<body class="bg-slate-50 text-slate-800 dark:bg-gradient-to-br dark:from-[#0b0f19] dark:via-[#0f172a] dark:to-[#020617] dark:text-slate-100 min-h-screen flex flex-col antialiased selection:bg-indigo-500 selection:text-white w-full overflow-x-hidden">
+<body class="bg-slate-50 text-slate-800 dark:bg-gradient-to-br dark:from-[#0b0f19] dark:via-[#0f172a] dark:to-[#020617] dark:text-slate-100 min-h-screen flex flex-col antialiased selection:bg-indigo-500 selection:text-white w-full overflow-x-hidden relative">
 
-  <!-- Ambient Glow -->
+  <!-- Ambient Blue Glow หลังกล่องค้นหาและสแกนหน้า -->
   <div class="glow-bg-layer glow-bg"></div>
 
-  <!-- Navbar (ปรับขนาดและ Flex ให้พอดีหน้าจอมือถือทุกขนาด ไม่ขาด ไม่ตกบรรทัด) -->
+  <!-- Navbar -->
   <header class="w-full border-b border-slate-200 dark:border-slate-800 px-3 sm:px-6 py-2.5 sm:py-3.5 glass-card sticky top-0 z-40 backdrop-blur-md">
     <div class="max-w-6xl mx-auto flex items-center justify-between gap-2">
       
-      <!-- โลโก้และชื่อระบบ -->
       <div class="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
         <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-tr from-indigo-600 to-blue-500 flex items-center justify-center shadow-md shadow-indigo-500/20 text-white shrink-0">
           <i class="fa-solid fa-camera text-xs sm:text-base"></i>
@@ -118,20 +119,17 @@
             <h1 class="text-xs sm:text-base font-bold tracking-tight text-slate-800 dark:text-white truncate">
               คลังภาพจังหวัดบึงกาฬ
             </h1>
-            <!-- ป้าย AI กำหนด whitespace-nowrap ไม่ให้บีบเป็นวงกลมสูง -->
             <span class="whitespace-nowrap text-[9px] sm:text-[10px] bg-indigo-50 text-indigo-600 dark:bg-indigo-500/10 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-400/20 px-1.5 py-0.2 rounded-full font-normal">
               AI Powered
             </span>
           </div>
           <p class="text-[9px] sm:text-xs text-slate-500 dark:text-slate-400 truncate">
-            ค้นหาภาพของคุณง่ายๆ พัฒนาโดย สนง.พมจ.บึงกาฬ
+            พัฒนาโดย สนง.พมจ.บึงกาฬ
           </p>
         </div>
       </div>
 
-      <!-- สวิตช์และปุ่มอัปโหลด -->
       <div class="flex items-center gap-2 sm:gap-3 shrink-0">
-        <!-- Switch Toggle -->
         <div class="flex items-center gap-1 sm:gap-1.5">
           <i id="sun-icon" class="fa-regular fa-sun text-[11px] sm:text-xs text-amber-500 dark:text-slate-500"></i>
           <button 
@@ -145,7 +143,6 @@
           <i id="moon-icon" class="fa-regular fa-moon text-[11px] sm:text-xs text-slate-400 dark:text-indigo-400"></i>
         </div>
 
-        <!-- ปุ่มอัปโหลด -->
         <button onclick="toggleUploadModal(true)" class="group flex items-center gap-1 bg-indigo-600 hover:bg-indigo-700 text-white dark:bg-indigo-600/20 dark:hover:bg-indigo-600/30 dark:text-indigo-200 dark:hover:text-white border border-transparent dark:border-indigo-500/30 px-2.5 py-1.5 sm:px-3.5 sm:py-2 rounded-xl text-[11px] sm:text-xs font-medium transition duration-200 active:scale-95 shadow-sm shrink-0">
           <i class="fa-solid fa-cloud-arrow-up text-[11px] sm:text-xs text-indigo-200 dark:text-indigo-400"></i>
           <span class="hidden sm:inline">อัปโหลดรูปภาพ</span>
@@ -191,7 +188,7 @@
         <div class="flex-1 h-px bg-slate-200 dark:bg-slate-800"></div>
       </div>
 
-      <!-- 2. กล่องสแกนใบหน้าแบบเดิม -->
+      <!-- 2. กล่องสแกนใบหน้า -->
       <div class="w-full glass-card rounded-2xl p-4 sm:p-6 md:p-7 shadow-xl relative overflow-hidden transition-all duration-300 backdrop-blur-md text-center">
         
         <div onclick="openSelectMethodModal()" class="cursor-pointer flex flex-col items-center justify-center border-2 border-dashed border-slate-300 dark:border-slate-700 hover:border-indigo-500 dark:hover:border-indigo-400 rounded-xl p-5 sm:p-7 md:p-8 transition-all duration-300 hover:bg-slate-50 dark:hover:bg-slate-800/40 group relative">
@@ -211,7 +208,6 @@
 
         <input id="search-input" type="file" accept="image/*" class="hidden" onchange="searchFace(event)">
 
-        <!-- กล่องสถานะการค้นหา -->
         <div id="search-status" class="hidden mt-3.5 pt-3.5 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between">
           <div class="flex items-center gap-2 text-xs text-indigo-600 dark:text-indigo-300">
             <i id="status-spinner" class="fa-solid fa-circle-notch fa-spin text-indigo-500 text-sm"></i>
@@ -225,7 +221,7 @@
       </div>
     </section>
 
-    <!-- Results Section (เฉพาะรูปที่ค้นพบ) -->
+    <!-- Results Section -->
     <section>
       <div class="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-2.5 mb-4">
         <div class="flex items-center gap-2">
@@ -244,7 +240,7 @@
       </div>
     </section>
 
-    <!-- Albums Section (อัลบั้มกิจกรรมทั้งหมด) -->
+    <!-- Albums Section -->
     <section class="pt-3 border-t border-slate-200 dark:border-slate-800/80">
       <div class="flex items-center justify-between pb-2.5 mb-4">
         <div class="flex items-center gap-2">
@@ -261,7 +257,7 @@
 
   </main>
 
-  <!-- ================= POPUP เลือกว่าจะอัปโหลด หรือ เปิดกล้อง ================= -->
+  <!-- POPUP เลือกว่าจะอัปโหลด หรือ เปิดกล้อง -->
   <div id="select-method-modal" class="hidden fixed inset-0 bg-black/60 dark:bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 z-50">
     <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl max-w-xs w-full p-4 sm:p-5 shadow-2xl relative text-center">
       <div class="flex justify-between items-center pb-2 mb-3 border-b border-slate-100 dark:border-slate-800">
@@ -295,7 +291,7 @@
     </div>
   </div>
 
-  <!-- ================= Modal เปิดกล้องถ่ายภาพสด (Camera Live Capture) ================= -->
+  <!-- Modal เปิดกล้องถ่ายภาพสด -->
   <div id="camera-modal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-md flex items-center justify-center p-4 z-50">
     <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-sm w-full p-4 sm:p-5 text-white flex flex-col items-center relative shadow-2xl">
       <div class="w-full flex justify-between items-center mb-3">
@@ -409,7 +405,6 @@
     let mediaStream = null;
     document.getElementById('ev-date').valueAsDate = new Date();
 
-    // ================= ระบบ Popup เลือกวิธีสแกนใบหน้า =================
     function openSelectMethodModal() {
       document.getElementById('select-method-modal').classList.remove('hidden');
     }
@@ -428,7 +423,6 @@
       openCameraModal();
     }
 
-    // ================= ระบบเปิดกล้องถ่ายภาพสด (Camera Handler) =================
     async function openCameraModal() {
       const modal = document.getElementById('camera-modal');
       const video = document.getElementById('camera-feed');
@@ -495,7 +489,6 @@
       }
     }
 
-    // ================= ระบบสลับ Dark / Light Mode =================
     function initTheme() {
       const savedTheme = localStorage.getItem('theme');
       const isDark = savedTheme ? savedTheme === 'dark' : window.matchMedia('(prefers-color-scheme: dark)').matches;
@@ -598,7 +591,6 @@
       });
     }
 
-    // ================= ค้นหากิจกรรมแบบคำใกล้เคียง (Fuzzy Match) =================
     function isSubsequence(pattern, str) {
       let pIdx = 0, sIdx = 0;
       while (pIdx < pattern.length && sIdx < str.length) {
@@ -807,7 +799,7 @@
           emptyState.classList.remove('hidden');
           emptyState.querySelector('p').innerText = "ไม่พบรูปภาพของคุณในกิจกรรมนี้";
           badge.innerText = `พบ 0 รูป`;
-          badge.className = "text-[10px] sm:text-xs bg-rose-50 dark:bg-rose-500/10 border border-rose-200 dark:border-rose-500/30 text-rose-600 dark:text-rose-400 px-2 py-0.5 rounded-full font-medium";
+          badge.className = "text-[10px] sm:text-xs bg-rose-50 dark:bg-rose-500/10 border border-rose-200 dark:border-rose-500/30 text-rose-600 dark:text-rose-400 px-2.5 py-0.5 rounded-full font-medium";
           statusMsg.innerText = "ไม่พบบุคคลที่ตรงกัน";
         }
       } catch (err) {
@@ -827,7 +819,7 @@
       document.getElementById('empty-search-state').classList.remove('hidden');
       document.getElementById('empty-search-state').querySelector('p').innerText = "อัปโหลดภาพใบหน้าด้านบนเพื่อดูภาพที่คุณเข้าร่วมกิจกรรม";
       document.getElementById('result-badge').innerText = "ยังไม่มีการค้นหา";
-      document.getElementById('result-badge').className = "text-[10px] sm:text-xs bg-slate-100 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400 px-2 py-0.5 rounded-full";
+      document.getElementById('result-badge').className = "text-[10px] sm:text-xs bg-slate-100 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400 px-2.5 py-0.5 rounded-full";
       
       document.getElementById('selfie-preview').classList.add('hidden');
       document.getElementById('default-icon').classList.remove('hidden');

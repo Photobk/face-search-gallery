@@ -188,13 +188,13 @@
         <div class="flex-1 h-px bg-slate-200 dark:bg-slate-800"></div>
       </div>
 
-      <!-- 2. กล่องสแกนใบหน้า -->
-      <div class="w-full glass-card rounded-2xl p-4 sm:p-6 md:p-7 shadow-xl relative overflow-hidden transition-all duration-300 backdrop-blur-md text-center">
+      <!-- 2. กล่องสแกนใบหน้า (ปรับเป็นพื้นหลังสีน้ำเงิน/คราม ตามปุ่มอัปโหลดรูปภาพ) -->
+      <div class="w-full rounded-2xl p-4 sm:p-6 md:p-7 shadow-xl shadow-indigo-600/15 relative overflow-hidden transition-all duration-300 bg-gradient-to-br from-indigo-600 via-indigo-700 to-blue-600 dark:from-[#1e1b4b] dark:via-[#1e293b] dark:to-[#0f172a] text-center text-white border border-indigo-400/30 dark:border-indigo-500/20">
         
-        <div onclick="openSelectMethodModal()" class="cursor-pointer flex flex-col items-center justify-center border-2 border-dashed border-slate-300 dark:border-slate-700 hover:border-indigo-500 dark:hover:border-indigo-400 rounded-xl p-5 sm:p-7 md:p-8 transition-all duration-300 hover:bg-slate-50 dark:hover:bg-slate-800/40 group relative">
+        <div onclick="openSelectMethodModal()" class="cursor-pointer flex flex-col items-center justify-center border-2 border-dashed border-white/30 hover:border-white rounded-xl p-5 sm:p-7 md:p-8 transition-all duration-300 hover:bg-white/10 group relative">
           
-          <div id="preview-container" class="relative w-16 h-16 sm:w-20 sm:h-20 rounded-2xl overflow-hidden bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 flex items-center justify-center mb-2.5 shadow-inner group-hover:scale-105 transition-transform">
-            <svg id="default-icon" class="w-8 h-8 sm:w-10 sm:h-10 text-indigo-500 dark:text-indigo-400 group-hover:text-indigo-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div id="preview-container" class="relative w-16 h-16 sm:w-20 sm:h-20 rounded-2xl overflow-hidden bg-white/10 border border-white/20 flex items-center justify-center mb-2.5 shadow-inner group-hover:scale-105 transition-transform backdrop-blur-sm">
+            <svg id="default-icon" class="w-8 h-8 sm:w-10 sm:h-10 text-white group-hover:text-indigo-200 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
             </svg>
@@ -202,18 +202,18 @@
             <div id="scan-bar" class="hidden absolute top-0 left-0 w-full scan-line"></div>
           </div>
 
-          <span class="text-xs sm:text-sm font-semibold text-slate-800 dark:text-slate-100 group-hover:text-indigo-600 dark:group-hover:text-indigo-300 transition-colors block">กดเลือกรูปหน้าตรง หรือ ถ่ายเซลฟี่</span>
-          <span class="text-[10px] sm:text-xs text-slate-500 dark:text-slate-400 block mt-0.5">AI จะค้นหารูปกิจกรรมทั้งหมดที่มีคุณโดยอัตโนมัติ</span>
+          <span class="text-xs sm:text-sm font-semibold text-white group-hover:text-indigo-100 transition-colors block">กดเลือกรูปหน้าตรง หรือ ถ่ายเซลฟี่</span>
+          <span class="text-[10px] sm:text-xs text-indigo-100/80 block mt-0.5">AI จะค้นหารูปกิจกรรมทั้งหมดที่มีคุณโดยอัตโนมัติ</span>
         </div>
 
         <input id="search-input" type="file" accept="image/*" class="hidden" onchange="searchFace(event)">
 
-        <div id="search-status" class="hidden mt-3.5 pt-3.5 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between">
-          <div class="flex items-center gap-2 text-xs text-indigo-600 dark:text-indigo-300">
-            <i id="status-spinner" class="fa-solid fa-circle-notch fa-spin text-indigo-500 text-sm"></i>
-            <span id="status-msg" class="text-slate-700 dark:text-slate-300 font-medium">กำลังค้นหา...</span>
+        <div id="search-status" class="hidden mt-3.5 pt-3.5 border-t border-white/15 flex items-center justify-between">
+          <div class="flex items-center gap-2 text-xs text-indigo-100">
+            <i id="status-spinner" class="fa-solid fa-circle-notch fa-spin text-white text-sm"></i>
+            <span id="status-msg" class="text-white font-medium">กำลังค้นหา...</span>
           </div>
-          <button onclick="resetSearch()" class="text-xs text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 px-2.5 py-1 rounded-lg border border-slate-200 dark:border-slate-700 transition flex items-center gap-1.5">
+          <button onclick="resetSearch()" class="text-xs text-indigo-100 hover:text-white bg-white/10 hover:bg-white/20 px-2.5 py-1 rounded-lg border border-white/20 transition flex items-center gap-1.5">
             <i class="fa-solid fa-rotate-left"></i> ล้างค่า
           </button>
         </div>

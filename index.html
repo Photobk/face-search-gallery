@@ -39,9 +39,9 @@
       top: 0;
       left: 50%;
       transform: translateX(-50%);
-      width: 700px;
-      height: 380px;
-      filter: blur(70px);
+      width: 800px;
+      height: 420px;
+      filter: blur(75px);
       z-index: -1;
       pointer-events: none;
     }
@@ -53,7 +53,7 @@
     @keyframes scan {
       0% { transform: translateY(0); opacity: 0; }
       50% { opacity: 1; }
-      100% { transform: translateY(80px); opacity: 0; }
+      100% { transform: translateY(95px); opacity: 0; }
     }
     #modal-album-photos {
       display: grid !important;
@@ -61,7 +61,6 @@
       column-gap: 1.25rem !important;
       row-gap: 1.5rem !important;
     }
-    /* ปรับแต่งปฏิทินให้คลิกได้ทั้งช่อง */
     input[type="date"]::-webkit-calendar-picker-indicator {
       cursor: pointer;
       opacity: 0.6;
@@ -94,12 +93,10 @@
       </div>
 
       <div class="flex items-center gap-3">
-        <!-- ปุ่มสลับ Dark / Light Mode -->
         <button onclick="toggleTheme()" id="theme-toggle" class="p-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-white transition shadow-sm" title="สลับโหมด สว่าง / มืด">
           <i id="theme-icon" class="fa-solid fa-sun text-sm"></i>
         </button>
 
-        <!-- ปุ่มเปิดหน้าต่างอัปโหลดอัลบั้ม -->
         <button onclick="toggleUploadModal(true)" class="group flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white dark:bg-indigo-600/20 dark:hover:bg-indigo-600/30 dark:text-indigo-200 dark:hover:text-white border border-transparent dark:border-indigo-500/30 px-3.5 py-2 rounded-xl text-xs font-medium transition duration-200 active:scale-95 shadow-sm">
           <i class="fa-solid fa-cloud-arrow-up text-indigo-200 dark:text-indigo-400 group-hover:scale-110 transition-transform"></i>
           <span class="hidden sm:inline">ส่งรูปภาพ</span>
@@ -110,40 +107,47 @@
   </header>
 
   <!-- Main Container -->
-  <main class="max-w-6xl w-full mx-auto p-4 md:p-8 flex-1 flex flex-col space-y-10">
+  <main class="max-w-6xl w-full mx-auto p-4 md:p-8 flex-1 flex flex-col space-y-12">
     
-    <!-- Top Search & Face Area -->
-    <section class="max-w-md w-full mx-auto flex flex-col items-center space-y-4">
+    <!-- Top Hero Section (Search Bar & Face Scan ขยายสัดส่วนเต็มตา) -->
+    <section class="max-w-2xl w-full mx-auto flex flex-col items-center space-y-5">
       
-      <!-- 1. ช่องค้นหากิจกรรม (ย้ายขึ้นมาไว้ด้านบน ชัดเจนตามภาพ) -->
-      <div class="w-full relative">
-        <span class="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none text-slate-400 dark:text-slate-500">
-          <i class="fa-solid fa-magnifying-glass text-xs"></i>
+      <!-- 1. Search Bar ขยายใหญ่ กว้างสมส่วน -->
+      <div class="w-full relative shadow-lg rounded-2xl">
+        <span class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-slate-400 dark:text-slate-400">
+          <i class="fa-solid fa-magnifying-glass text-sm"></i>
         </span>
         <input 
           type="text" 
           id="album-search-input" 
           oninput="filterAlbums()" 
-          placeholder="ค้นหาชื่อกิจกรรม หรือ วันที่ (คำใกล้เคียงได้)..." 
-          class="w-full pl-9 pr-9 py-2.5 text-xs rounded-2xl bg-white dark:bg-slate-900/90 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 transition shadow-md backdrop-blur-md"
+          placeholder="ค้นหาชื่อกิจกรรม หรือ วันที่ (เช่น ประชุม, สัมพันธ์, 2026)..." 
+          class="w-full pl-11 pr-11 py-3.5 text-sm rounded-2xl bg-white dark:bg-slate-900/95 border border-slate-200 dark:border-slate-700/80 text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-400 focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/25 transition shadow-sm backdrop-blur-md"
         >
         <button 
           type="button" 
           id="clear-album-search" 
           onclick="clearAlbumSearch()" 
-          class="hidden absolute inset-y-0 right-0 flex items-center pr-3 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition text-xs"
+          class="hidden absolute inset-y-0 right-0 flex items-center pr-4 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition text-sm"
         >
           <i class="fa-solid fa-circle-xmark"></i>
         </button>
       </div>
 
-      <!-- 2. กล่องสแกนใบหน้า -->
-      <div class="w-full glass-card rounded-2xl p-5 shadow-xl relative overflow-hidden transition-all duration-300 backdrop-blur-md text-center">
+      <!-- เส้นแบ่งทางเลือก -->
+      <div class="w-full flex items-center gap-3 px-2">
+        <div class="flex-1 h-px bg-slate-200 dark:bg-slate-800"></div>
+        <span class="text-[11px] font-medium text-slate-400 dark:text-slate-500 tracking-wider uppercase">หรือ ค้นหาด้วยใบหน้าของคุณ</span>
+        <div class="flex-1 h-px bg-slate-200 dark:bg-slate-800"></div>
+      </div>
+
+      <!-- 2. กล่องสแกนใบหน้าขนาดกว้างสมส่วน (max-w-2xl) -->
+      <div class="w-full glass-card rounded-2xl p-6 md:p-7 shadow-xl relative overflow-hidden transition-all duration-300 backdrop-blur-md text-center">
         
-        <label for="search-input" class="cursor-pointer flex flex-col items-center justify-center border-2 border-dashed border-slate-300 dark:border-slate-700 hover:border-indigo-500 rounded-xl p-5 transition-all duration-300 hover:bg-slate-50 dark:hover:bg-slate-800/40 group relative">
+        <label for="search-input" class="cursor-pointer flex flex-col items-center justify-center border-2 border-dashed border-slate-300 dark:border-slate-700 hover:border-indigo-500 dark:hover:border-indigo-400 rounded-xl p-6 md:p-8 transition-all duration-300 hover:bg-slate-50 dark:hover:bg-slate-800/40 group relative">
           
-          <div id="preview-container" class="relative w-16 h-16 rounded-xl overflow-hidden bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 flex items-center justify-center mb-2 shadow-inner group-hover:scale-105 transition-transform">
-            <svg id="default-icon" class="w-8 h-8 text-indigo-500 dark:text-indigo-400 group-hover:text-indigo-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div id="preview-container" class="relative w-20 h-20 rounded-2xl overflow-hidden bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 flex items-center justify-center mb-3 shadow-inner group-hover:scale-105 transition-transform">
+            <svg id="default-icon" class="w-10 h-10 text-indigo-500 dark:text-indigo-400 group-hover:text-indigo-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
             </svg>
@@ -151,18 +155,18 @@
             <div id="scan-bar" class="hidden absolute top-0 left-0 w-full scan-line"></div>
           </div>
 
-          <span class="text-xs font-semibold text-slate-700 dark:text-slate-200 group-hover:text-indigo-600 dark:group-hover:text-indigo-300 transition-colors block">กดเลือกรูปหน้าตรง หรือ ถ่ายเซลฟี่</span>
-          <span class="text-[11px] text-slate-500 dark:text-slate-400 block mt-0.5">ค้นหารูปของคุณทั้งหมดทันที</span>
+          <span class="text-sm font-semibold text-slate-800 dark:text-slate-100 group-hover:text-indigo-600 dark:group-hover:text-indigo-300 transition-colors block">กดเลือกรูปหน้าตรง หรือ ถ่ายเซลฟี่</span>
+          <span class="text-xs text-slate-500 dark:text-slate-400 block mt-1">AI จะค้นหารูปกิจกรรมทั้งหมดที่มีคุณโดยอัตโนมัติ</span>
 
           <input id="search-input" type="file" accept="image/*" class="hidden" onchange="searchFace(event)">
         </label>
 
-        <div id="search-status" class="hidden mt-3 pt-3 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between">
-          <div class="flex items-center gap-2 text-xs text-indigo-600 dark:text-indigo-300">
-            <i id="status-spinner" class="fa-solid fa-circle-notch fa-spin text-indigo-500"></i>
-            <span id="status-msg" class="text-slate-600 dark:text-slate-300">กำลังค้นหา...</span>
+        <div id="search-status" class="hidden mt-4 pt-4 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between">
+          <div class="flex items-center gap-2.5 text-xs text-indigo-600 dark:text-indigo-300">
+            <i id="status-spinner" class="fa-solid fa-circle-notch fa-spin text-indigo-500 text-sm"></i>
+            <span id="status-msg" class="text-slate-700 dark:text-slate-300 font-medium">กำลังค้นหา...</span>
           </div>
-          <button onclick="resetSearch()" class="text-[11px] text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 px-2.5 py-1 rounded-lg border border-slate-200 dark:border-slate-700 transition flex items-center gap-1">
+          <button onclick="resetSearch()" class="text-xs text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 px-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700 transition flex items-center gap-1.5">
             <i class="fa-solid fa-rotate-left"></i> ล้างค่า
           </button>
         </div>
@@ -234,7 +238,7 @@
     </div>
   </div>
 
-  <!-- Modal อัปโหลดรูปภาพเป็นอัลบั้ม (ปรับแต่งตามคำขอ) -->
+  <!-- Modal อัปโหลดรูปภาพเป็นอัลบั้ม -->
   <div id="upload-modal" class="hidden fixed inset-0 bg-black/60 dark:bg-black/80 backdrop-blur-md flex items-center justify-center p-4 z-50">
     <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl max-w-md w-full p-6 shadow-2xl text-slate-800 dark:text-slate-100 relative">
       <div class="flex justify-between items-center mb-5 pb-3 border-b border-slate-200 dark:border-slate-800">
@@ -293,7 +297,6 @@
     let loadedAlbums = [];
     document.getElementById('ev-date').valueAsDate = new Date();
 
-    // ================= ระบบสลับ Dark / Light Mode =================
     function initTheme() {
       const savedTheme = localStorage.getItem('theme');
       const isDark = savedTheme ? savedTheme === 'dark' : window.matchMedia('(prefers-color-scheme: dark)').matches;
